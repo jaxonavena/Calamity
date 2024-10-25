@@ -7,6 +7,8 @@ const FRICTION: float = 0.15
 
 var mov_direction: Vector2 = Vector2.ZERO
 
+onready var animated_sprite: AnimatedSprite2D = get_node("AnimatedSprite2D")
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass # Replace with function body.
