@@ -5,7 +5,7 @@ var state = null
 var previous_state = null
 var states = {}
 
-onready var parent = get_parent()
+@onready var parent = get_parent()
 
 func _state_logic(delta):
 	pass

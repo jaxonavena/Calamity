@@ -5,8 +5,6 @@
 
 [node name="Character" type="CharacterBody2D"]
 script = ExtResource("1_80fou")
-acceleration = null
-max_speed = null
 
 [node name="StateMachine" type="Node" parent="."]
 script = ExtResource("2_wa1s3")
