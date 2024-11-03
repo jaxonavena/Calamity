@@ -56,11 +56,20 @@ func deal_with_damage():
 		health = health - 10
 		print("slime health - 10")
 		if health <= 0:
-			drop_items()
-			self.queue_free()
+			die()
 		
+func die():
+	drop_items()
+	update_player_xp()
+	self.queue_free()
 
 func drop_items():
 	var item_instance = coin_bag.instantiate()
 	item_instance.global_position = $Marker2D.global_position
 	get_parent().add_child(item_instance)
+	
+func update_player_xp():
+	var xp = randi_range(3, 20)
+	global_script.player_xp = global_script.player_xp + xp
+	print("XP:")
+	print(global_script.player_xp)
