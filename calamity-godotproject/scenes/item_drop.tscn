@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://beupew5wi5pbq"]
+
+[ext_resource type="Script" path="res://scenes/item_drop.gd" id="1_302rb"]
+[ext_resource type="Texture2D" uid="uid://d0dtdih3n1ncw" path="res://art/props_itens/bag_coins.png" id="1_jimee"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_2x26h"]
+radius = 6.0
+
+[node name="item_drop" type="StaticBody2D"]
+script = ExtResource("1_302rb")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(1, -2)
+texture = ExtResource("1_jimee")
+
+[node name="detection_area" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="detection_area"]
+shape = SubResource("CircleShape2D_2x26h")
+
+[connection signal="body_entered" from="detection_area" to="." method="_on_detection_area_body_entered"]

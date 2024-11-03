@@ -102,6 +102,9 @@ position = Vector2(169, 101)
 [node name="enemy" parent="." instance=ExtResource("3_balui")]
 position = Vector2(247, 103)
 
+[node name="enemy2" parent="." instance=ExtResource("3_balui")]
+position = Vector2(329, 63)
+
 [node name="Border" type="StaticBody2D" parent="."]
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Border"]

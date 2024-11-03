@@ -4,6 +4,7 @@ var speed = 45
 var player_chase = false
 var player = null
 
+var coin_bag = preload("res://scenes/item_drop.tscn")
 var health = 30
 var player_in_attack_zone = false
 
@@ -55,5 +56,11 @@ func deal_with_damage():
 		health = health - 10
 		print("slime health - 10")
 		if health <= 0:
+			drop_items()
 			self.queue_free()
 		
+
+func drop_items():
+	var item_instance = coin_bag.instantiate()
+	item_instance.global_position = $Marker2D.global_position
+	get_parent().add_child(item_instance)
