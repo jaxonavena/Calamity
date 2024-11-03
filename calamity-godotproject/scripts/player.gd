@@ -23,6 +23,7 @@ func _physics_process(delta):
 		$AnimatedSprite2D.play("death")
 		print("player is dead")
 		self.queue_free()
+		get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 		
 		
 		

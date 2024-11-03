@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Calamity-GodotProject"
-run/main_scene="res://scenes/main.tscn"
+run/main_scene="res://scenes/main_menu.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon="res://icon.svg"
 
@@ -23,7 +23,7 @@ Global="*res://scripts/global.gd"
 
 window/size/viewport_width=2000
 window/size/viewport_height=2000
-window/stretch/scale=4.98
+window/size/mode=2
 
 [dotnet]
 
