@@ -417,7 +417,7 @@ animations = [{
 radius = 5.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_icepc"]
-radius = 20.0
+radius = 15.0
 
 [node name="Player" type="CharacterBody2D"]
 y_sort_enabled = true
@@ -440,14 +440,14 @@ shape = SubResource("CircleShape2D_0hjmw")
 [node name="player_hitbox" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="player_hitbox"]
-position = Vector2(-15, -10)
+position = Vector2(-16, -11)
 shape = SubResource("CircleShape2D_icepc")
 
 [node name="enemy_attackcooldown" type="Timer" parent="."]
-wait_time = 0.504
+wait_time = 0.5
 
 [node name="attack_timer" type="Timer" parent="."]
-wait_time = 0.504
+wait_time = 0.5
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(201, 192)

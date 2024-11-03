@@ -4,7 +4,7 @@ var speed = 45
 var player_chase = false
 var player = null
 
-var health = 100
+var health = 30
 var player_in_attack_zone = false
 
 func _physics_process(delta):
@@ -24,31 +24,36 @@ func _physics_process(delta):
 func _on_detection_area_body_entered(body):
 	player = body
 	player_chase = true
+	print("player chase")
 	
-
-
-func _on_detection_area_body_shape_exited(body):
+func _on_detection_area_body_exited(body):
 	player = null
 	player_chase = false
-
-
+	print("stop player chase")
+	
 func enemy():
 	pass
 
-
-func _on_enemy_hitbox_body_shape_entered(body):
+func _on_enemy_hitbox_body_entered(body):
 	if body.has_method("player"):
 		player_in_attack_zone = true
+		#print("player in zone")
+		
 
-
-func _on_enemy_hitbox_body_shape_exited(body):
+func _on_enemy_hitbox_body_exited(body):
 	if body.has_method("player"):
 		player_in_attack_zone = false
+		#print("player left zone")
 
 func deal_with_damage():
-	if player_in_attack_zone and Global.player_current_attack == true:
-		health = health - 20
-		print("slime health - 20")
+	#if global_script.player_current_attack:
+		#print("HYAH!")
+	#if player_in_attack_zone:
+		#print("attack da playa...")
+		
+	if player_in_attack_zone and global_script.player_current_attack == true:
+		health = health - 10
+		print("slime health - 10")
 		if health <= 0:
 			self.queue_free()
 		

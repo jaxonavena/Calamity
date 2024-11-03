@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 const speed = 100
-var current_dir = "none"
+var current_dir = "down"
 var enemy_in_attack_range = false
 var enemy_attack_cooldown = true
 var health = 100
@@ -22,7 +22,6 @@ func _physics_process(delta):
 		health = 0
 		$AnimatedSprite2D.play("death")
 		print("player is dead")
-		self.queue_free()
 		get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 		
 		
@@ -108,7 +107,7 @@ func enemy_attack():
 		health = health - 10;
 		enemy_attack_cooldown = false
 		$enemy_attackcooldown.start()
-		print("player taken damage")
+		print("player taken damage\n")
 
 
 func _on_enemy_attackcooldown_timeout():
@@ -118,7 +117,7 @@ func _on_enemy_attackcooldown_timeout():
 func attack():
 	var dir = current_dir
 	if Input.is_action_just_pressed("attack"):
-		Global.player_current_attack = true
+		global_script.player_current_attack = true
 		attack_in_progess = true
 		if dir == "right":
 			$AnimatedSprite2D.flip_h = false
@@ -139,9 +138,10 @@ func attack():
 		
 		
 		
+		
 
 
 func _on_attack_timer_timeout():
 	$attack_timer.stop()
-	Global.player_current_attack = false
+	global_script.player_current_attack = false
 	attack_in_progess = false

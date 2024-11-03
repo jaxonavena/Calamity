@@ -102,7 +102,7 @@ position = Vector2(169, 101)
 [node name="enemy" parent="." instance=ExtResource("3_balui")]
 position = Vector2(247, 103)
 
-[node name="collisions" type="StaticBody2D" parent="."]
+[node name="Border" type="StaticBody2D" parent="."]
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="collisions"]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Border"]
 polygon = PackedVector2Array(0, 0, 223, 0, 223, -27, 274, -29, 273, -1, 400, 0, 400, 208, -17, 208, -16, 0, -48, 243, 419, 224, 416, -49, 1, -38, -14, -3, -9, 0)
