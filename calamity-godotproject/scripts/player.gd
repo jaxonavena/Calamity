@@ -98,7 +98,7 @@ func _on_player_hitbox_body_entered(body):
 		enemy_in_attack_range = true
 
 
-func _on_player_hitbox_body_shape_exited(body):
+func _on_player_hitbox_body_exited(body):
 	if body.has_method("enemy"):
 		enemy_in_attack_range = false
 
