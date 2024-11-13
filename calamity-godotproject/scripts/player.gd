@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-const speed = 100
+const speed = 120
 var current_dir = "down"
 var enemy_in_attack_range = false
 var enemy_attack_cooldown = true
@@ -27,22 +27,22 @@ func _physics_process(delta):
 		
 		
 func player_movement(delta):
-	if Input.is_action_pressed("ui_right"):
+	if Input.is_action_pressed("ui_right") or Input.is_key_pressed(KEY_D):
 		current_dir = "right"
 		play_animation(1)
 		velocity.x = speed
 		velocity.y = 0
-	elif Input.is_action_pressed("ui_left"):
+	elif Input.is_action_pressed("ui_left") or Input.is_key_pressed(KEY_A):
 		current_dir = "left"
 		play_animation(1)
 		velocity.x = -speed
 		velocity.y = 0
-	elif Input.is_action_pressed("ui_down"):
+	elif Input.is_action_pressed("ui_down") or Input.is_key_pressed(KEY_S):
 		current_dir = "down"
 		play_animation(1)
 		velocity.x = 0
 		velocity.y = speed
-	elif Input.is_action_pressed("ui_up"):
+	elif Input.is_action_pressed("ui_up") or Input.is_key_pressed(KEY_W):
 		current_dir = "up"
 		play_animation(1)
 		velocity.x = 0

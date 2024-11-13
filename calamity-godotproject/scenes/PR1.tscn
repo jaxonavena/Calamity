@@ -9,13 +9,13 @@ tile_map_data = PackedByteArray("AAAAAAAAAAAGAAMAAAABAAAAAAACAAEAAAACAAAAAAACAAE
 tile_set = ExtResource("1_2tv44")
 
 [node name="D1" type="Marker2D" parent="."]
-position = Vector2(87, 0)
+position = Vector2(95, 0)
 
 [node name="D2" type="Marker2D" parent="."]
-position = Vector2(176, 87)
+position = Vector2(176, 96)
 
 [node name="D3" type="Marker2D" parent="."]
-position = Vector2(88, 176)
+position = Vector2(80, 176)
 
 [node name="D4" type="Marker2D" parent="."]
-position = Vector2(0, 87)
+position = Vector2(0, 80)

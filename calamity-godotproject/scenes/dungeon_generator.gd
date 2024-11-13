@@ -12,9 +12,9 @@ func _ready():
 	
 func _process(delta):
 	# Check for Cmd+R or Ctrl+R press to restart the scene
-	if Input.is_action_just_pressed("restart_scene"):
+	if Input.is_action_pressed("restart_scene"):
 		restart_scene()
-	
+		
 func restart_scene():
 	# Reload the current scene
 	var current_scene = get_tree().current_scene
@@ -31,7 +31,7 @@ func generate_dungeon():
 	print(start_room.position)
 
 	# Start placing connected rooms
-	place_connected_rooms(start_room, 5)  # Adjust number of rooms
+	place_connected_rooms(start_room, 10)  # Adjust number of rooms
 
 
 func place_player():
@@ -45,9 +45,8 @@ func place_enemies(count: int):
 	for i in range(count):
 		# Create and position the enemy
 		var enemy_instance = enemy.instantiate()
-		enemy_instance.position = Vector2(randi_range(0, 1500), randi_range(0, 1500))  #set position
+		enemy_instance.position = Vector2(randi_range(0, 700), randi_range(0, 700))  #set position
 		add_child(enemy_instance)
-
 	
 func instance_room() -> Node2D:
 	# Choose a random room scene to instance
@@ -59,17 +58,19 @@ func place_connected_rooms(current_room: Node2D, remaining_rooms: int):
 		return
 
 	# Get available door positions
-	var doors = get_door_markers(current_room)
-	for door in doors:
+	var current_doors = get_door_markers(current_room)
+	for door in current_doors:
 		# Position of the new room based on the door's position
-		var target_position = current_room.global_position + door.global_position
-
+		var target_position = door.global_position
+		
 		if used_positions.has(target_position):
 			continue  # Skip if there's already a room here
 
 		var new_room = instance_room()
+		var new_doors = get_door_markers(new_room)
+		var door_offset = new_doors[0].global_position - new_room.global_position
+		new_room.global_position = target_position - door_offset
 		add_child(new_room)
-		new_room.global_position = target_position
 		used_positions[target_position] = new_room
 
 		# Recursively place more rooms
@@ -80,8 +81,8 @@ func get_door_markers(room: Node2D) -> Array:
 	for child in room.get_children():
 		if child is Marker2D and child.name.begins_with("D"):
 			door_markers.append(child)
-	print("Getting this room's doors:")
-	print(room)
-	print("door markers:")
-	print(door_markers)
+	#print("Getting this room's doors:")
+	#print(room)
+	#print("door markers:")
+	#print(door_markers)
 	return door_markers
