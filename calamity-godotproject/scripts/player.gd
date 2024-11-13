@@ -1,5 +1,6 @@
 extends CharacterBody2D
 
+# Player stuff
 const speed = 120
 var current_dir = "down"
 var enemy_in_attack_range = false
@@ -8,7 +9,33 @@ var health = 100
 var player_alive = true
 var attack_in_progess = false
 
+# Ranged weapon stuff
+@export var fire_rate: float = 0.5  # Time between shots
+var projectile = preload("res://scenes/projectile.tscn")
+var can_shoot = true  # Whether the player can shoot
 
+func _process(delta):
+	# Shoot projectile when the player presses the shoot button
+	if Input.is_action_pressed("shoot") and can_shoot:
+		shoot_projectile()
+		can_shoot = false
+		# Wait for the next shot
+		#yield(get_tree().create_timer(fire_rate), "timeout")
+		can_shoot = true
+		
+# Function to shoot a projectile
+func shoot_projectile():
+	var projectile_inst = projectile.instantiate()
+	
+	# In the player's shoot function
+	var mouse_position = get_global_mouse_position()
+	var direction = (mouse_position - global_position).normalized()
+	projectile_inst.set_direction(direction)
+	
+	# place the projectile down
+	projectile_inst.position = self.position
+	get_parent().add_child(projectile_inst)
+	
 func _ready():
 	$AnimatedSprite2D.play("front_idle")
 
