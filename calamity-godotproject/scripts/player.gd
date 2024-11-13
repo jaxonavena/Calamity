@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 # Player stuff
-const speed = 120
+const speed = 100	
 var current_dir = "down"
 var enemy_in_attack_range = false
 var enemy_attack_cooldown = true

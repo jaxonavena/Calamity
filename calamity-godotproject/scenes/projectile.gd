@@ -11,17 +11,17 @@ func _ready():
 	# Start moving the projectile
 	set_physics_process(true)
 	
-	 # Set up the timer
+	# Set up the timer
 	lifetime_timer.wait_time = lifetime
 	lifetime_timer.one_shot = true
 	lifetime_timer.connect("timeout", Callable(self, "on_lifetime_timeout"))
 	add_child(lifetime_timer)
 	lifetime_timer.start()
-	#queue_free()
 
 # Callback when the lifetime of the projectile ends
 func on_lifetime_timeout():
-	queue_free()  # Destroy the projectile after the lifetime ends
+	#print("she gawn")
+	queue_free()
 
 func _process(delta):
 	# Move the projectile in the direction it's facing
@@ -33,7 +33,5 @@ func set_direction(dir: Vector2):
 
 func _on_area_2d_body_entered(body: Node2D) -> void:
 	if body.has_method("enemy"):
-		print("It's an enemy")
 		body.deal_with_damage(true)
-		print(body.health)
-		queue_free()  # Destroy the projectile after it hits something
+		queue_free()
