@@ -6,6 +6,10 @@ var enemy = preload("res://scenes/enemy.tscn")
 var used_positions = {}
 var door_distance_offsets = {}
 const NUM_ROOMS = 5
+const ROOM_REMOVAL_PERCENTAGE = 10
+var placed_rooms = []
+var delay = false # Delay the generation/shrinkage of the dungeon to watch it happen live
+const DELAY = 1.0
 
 func _ready():
 	generate_dungeon()
@@ -32,7 +36,7 @@ func restart_scene():
 func place_player():
 	# Create and position the player
 	var player_instance = player.instantiate()
-	player_instance.position = Vector2(500, 1000)  #set position
+	player_instance.position = Vector2(1000, 1000)  #set position
 	add_child(player_instance)
 	
 func place_enemies(count: int):
@@ -45,13 +49,16 @@ func place_enemies(count: int):
 func generate_dungeon():
 	# Initialize the starting room
 	var start_room = instance_room()
-	start_room.position = Vector2(500,1000)
+	start_room.global_position = Vector2(1000,1000)
 	add_child(start_room)
+	placed_rooms.append(start_room)
 	
-	used_positions[start_room.position] = start_room
+	used_positions[start_room.global_position] = start_room
 	calculate_door_distance_offsets(start_room)
+	
 	# Start placing connected rooms
 	place_connected_rooms(start_room, NUM_ROOMS)  # Adjust number of rooms
+	remove_some_rooms(ROOM_REMOVAL_PERCENTAGE) # Input the percentage of rooms you want to remove
 
 	
 func instance_room() -> Node2D:
@@ -80,13 +87,33 @@ func place_connected_rooms(current_room: Node2D, remaining_rooms: int):
 			continue  # Skip if there's already a connection here
 				
 		add_child(new_room)
+		placed_rooms.append(new_room)
 		used_positions[new_room.global_position] = new_room
 
 		# UNCOMMENT THIS TO SEE THE DUNGEON GROW
-		#await get_tree().create_timer(1).timeout 
+		#if delay:
+			#await wait_for(DELAY)
 		
 		# Recursively place more rooms
 		place_connected_rooms(new_room, remaining_rooms - 1)
+
+func remove_some_rooms(percentage: int):
+	var initial_size = placed_rooms.size()
+	while placed_rooms.size() > initial_size - ceil(initial_size * (percentage / 100.0)): # Remove designated percentage of rooms
+		var random_index = randi_range(0, placed_rooms.size() - 1)
+		var room = placed_rooms[random_index]
+		
+		if used_positions.has(room.global_position):
+			used_positions.erase(room.global_position)
+			
+		room.queue_free()
+		placed_rooms.remove_at(random_index) # pop
+		
+		# UNCOMMENT THIS TO SEE THE DUNGEON SHRINK
+		if delay:
+			await wait_for(DELAY)
+		
+	remove_non_adjacent_rooms() # clean inaccessible straggler rooms
 
 func determine_new_room_pos(door: Node2D, current_pos: Vector2) -> Vector2:
 	if door.name.begins_with("D1"):
@@ -108,3 +135,37 @@ func get_door_markers(room: Node2D) -> Array:
 		if child is Marker2D and child.name.begins_with("D"):
 			door_markers.append(child)
 	return door_markers
+	
+func remove_non_adjacent_rooms():
+	for key in used_positions.keys():  # Iterate over the keys in used_positions
+		var current_position = key  # This is the position of the current room
+
+		# Iterate over all the other positions in the dictionary
+		var flag = false
+		for other_position in used_positions.keys():
+			if current_position == other_position:
+				continue  # Skip comparing the room with itself
+
+			# Check if the room is adjacent by comparing the difference
+			if is_adjacent(current_position, other_position):
+				#print("Adjacent room found at:", other_position)
+				flag = true
+				break
+		
+		if !flag:
+			var room = used_positions[current_position]
+			used_positions.erase(room.global_position)
+			room.queue_free()
+			# Does not update placed_rooms... probably should
+			
+			# SEE THE DUNGEON SHRINK
+			if delay:
+				await wait_for(DELAY)
+
+func is_adjacent(pos1: Vector2, pos2: Vector2) -> bool:
+	# check if the two positions are adjacent up, down, left, or right
+	var diff = pos1 - pos2
+	return (abs(diff.x) == 160 and diff.y == 0) or (abs(diff.y) == 160 and diff.x == 0)
+
+func wait_for(time: float):
+	await get_tree().create_timer(time).timeout 
