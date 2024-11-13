@@ -1,11 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://fvuh24om4h5y"]
+[gd_scene load_steps=7 format=3 uid="uid://fvuh24om4h5y"]
 
 [ext_resource type="Script" path="res://scenes/dungeon_generator.gd" id="1_t1hdq"]
 [ext_resource type="PackedScene" uid="uid://c7yisnsvlbei8" path="res://scenes/PR1.tscn" id="2_3kjpu"]
 [ext_resource type="PackedScene" uid="uid://jeer3bdlrrig" path="res://scenes/PR2.tscn" id="3_wwpst"]
 [ext_resource type="PackedScene" uid="uid://cpvnvntgnu2oo" path="res://scenes/PR3.tscn" id="4_87sco"]
 [ext_resource type="PackedScene" uid="uid://dswsn32wm31eh" path="res://scenes/PR4.tscn" id="5_s571o"]
+[ext_resource type="PackedScene" uid="uid://bxn2dbpx7xln6" path="res://scenes/PR5.tscn" id="6_kbodt"]
 
 [node name="DungeonGenerator" type="Node2D"]
 script = ExtResource("1_t1hdq")
-room_scenes = [ExtResource("2_3kjpu"), ExtResource("3_wwpst"), ExtResource("4_87sco"), ExtResource("5_s571o")]
+room_scenes = [ExtResource("2_3kjpu"), ExtResource("3_wwpst"), ExtResource("4_87sco"), ExtResource("5_s571o"), ExtResource("6_kbodt")]
