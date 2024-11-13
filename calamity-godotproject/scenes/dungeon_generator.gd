@@ -1,6 +1,7 @@
 extends Node2D
 
 @export var room_scenes: Array = []
+var border_room = preload("res://scenes/border_room.tscn")
 var player = preload("res://scenes/player.tscn")
 var enemy = preload("res://scenes/enemy.tscn")
 var used_positions = {}
@@ -13,8 +14,8 @@ const DELAY = 1.0
 
 func _ready():
 	generate_dungeon()
-	#place_player()
-	#place_enemies(10)
+	place_player()
+	place_enemies(10)
 	
 func calculate_door_distance_offsets(current_room: Node2D):
 	var room_pos = current_room.global_position
@@ -32,18 +33,22 @@ func restart_scene():
 	# Reload the current scene
 	var current_scene = get_tree().current_scene
 	get_tree().reload_current_scene()
+
+func get_spawn_location() -> Vector2:
+	var salt = Vector2(randi_range(0, 160), randi_range(0, 160))
+	return used_positions.keys()[randi_range(0, used_positions.size() - 1)] + salt
 	
 func place_player():
 	# Create and position the player
 	var player_instance = player.instantiate()
-	player_instance.position = Vector2(1000, 1000)  #set position
+	player_instance.position = get_spawn_location()
 	add_child(player_instance)
 	
 func place_enemies(count: int):
 	for i in range(count):
 		# Create and position the enemy
 		var enemy_instance = enemy.instantiate()
-		enemy_instance.position = Vector2(randi_range(0, 700), randi_range(0, 700))  #set position
+		enemy_instance.position = get_spawn_location()
 		add_child(enemy_instance)
 	
 func generate_dungeon():
@@ -59,6 +64,7 @@ func generate_dungeon():
 	# Start placing connected rooms
 	place_connected_rooms(start_room, NUM_ROOMS)  # Adjust number of rooms
 	remove_some_rooms(ROOM_REMOVAL_PERCENTAGE) # Input the percentage of rooms you want to remove
+	place_borders()
 
 	
 func instance_room() -> Node2D:
@@ -137,9 +143,7 @@ func get_door_markers(room: Node2D) -> Array:
 	return door_markers
 	
 func remove_non_adjacent_rooms():
-	for key in used_positions.keys():  # Iterate over the keys in used_positions
-		var current_position = key  # This is the position of the current room
-
+	for current_position in used_positions.keys():  # Iterate over the keys in used_positions
 		# Iterate over all the other positions in the dictionary
 		var flag = false
 		for other_position in used_positions.keys():
@@ -169,3 +173,24 @@ func is_adjacent(pos1: Vector2, pos2: Vector2) -> bool:
 
 func wait_for(time: float):
 	await get_tree().create_timer(time).timeout 
+	
+func place_borders():
+	for current_position in used_positions.keys():  # Iterate over the keys in used_positions
+		var adjacent_spaces = []
+		adjacent_spaces.append(current_position + Vector2(0, 160)) #UP
+		adjacent_spaces.append(current_position + Vector2(0, -160)) #DOWN
+		adjacent_spaces.append(current_position + Vector2(-160, 0)) #LEFT
+		adjacent_spaces.append(current_position + Vector2(160, 0)) #RIGHT
+		
+		for space in adjacent_spaces:
+			if used_positions.has(space):
+				continue
+			else:
+				print("Border time")
+				var border = border_room.instantiate()
+				border.global_position = space
+				add_child(border)
+				
+				# SEE THE DUNGEON ADD BORDERS
+				if delay:
+					await wait_for(DELAY)
