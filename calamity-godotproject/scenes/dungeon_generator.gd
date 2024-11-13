@@ -82,6 +82,9 @@ func place_connected_rooms(current_room: Node2D, remaining_rooms: int):
 		add_child(new_room)
 		used_positions[new_room.global_position] = new_room
 
+		# UNCOMMENT THIS TO SEE THE DUNGEON GROW
+		#await get_tree().create_timer(1).timeout 
+		
 		# Recursively place more rooms
 		place_connected_rooms(new_room, remaining_rooms - 1)
 
