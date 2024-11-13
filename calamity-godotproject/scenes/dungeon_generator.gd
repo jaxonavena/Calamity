@@ -35,7 +35,7 @@ func restart_scene():
 	get_tree().reload_current_scene()
 
 func get_spawn_location() -> Vector2:
-	var salt = Vector2(randi_range(0, 160), randi_range(0, 160))
+	var salt = Vector2(randi_range(5, 160), randi_range(5, 160))
 	return used_positions.keys()[randi_range(0, used_positions.size() - 1)] + salt
 	
 func place_player():

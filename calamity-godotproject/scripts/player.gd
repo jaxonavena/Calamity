@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 # Player stuff
-const speed = 100	
+const speed = 120	
 var current_dir = "down"
 var enemy_in_attack_range = false
 var enemy_attack_cooldown = true
@@ -37,12 +37,14 @@ func shoot_projectile():
 	get_parent().add_child(projectile_inst)
 	
 func _ready():
+	$Camera2D.enabled = false
 	$AnimatedSprite2D.play("front_idle")
 
 func _physics_process(delta):
 	player_movement(delta)
 	enemy_attack()
 	attack()
+	
 	if health <= 0:
 		player_alive = false
 		#add death functionality here
@@ -50,8 +52,9 @@ func _physics_process(delta):
 		$AnimatedSprite2D.play("death")
 		print("player is dead")
 		get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
-		
-		
+	
+	elif Input.is_action_just_pressed("toggle_camera"):
+		$Camera2D.enabled = not $Camera2D.enabled # Press CMD+C to toggle the playe cam
 		
 func player_movement(delta):
 	if Input.is_action_pressed("ui_right") or Input.is_key_pressed(KEY_D):
@@ -74,8 +77,9 @@ func player_movement(delta):
 		play_animation(1)
 		velocity.x = 0
 		velocity.y = -speed
-	elif Input.is_action_pressed("ui_end"):
-		get_tree().quit()
+	#elif Input.is_action_just_pressed("ui_end"):
+		#get_tree().quit()
+	
 		
 	else:
 		play_animation(0)
