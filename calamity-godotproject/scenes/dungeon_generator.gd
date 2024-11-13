@@ -6,7 +6,7 @@ var enemy = preload("res://scenes/enemy.tscn")
 var used_positions = {}
 var door_distance_offsets = {}
 const NUM_ROOMS = 5
-const ROOM_REMOVAL_PERCENTAGE = 10
+const ROOM_REMOVAL_PERCENTAGE = 15
 var placed_rooms = []
 var delay = false # Delay the generation/shrinkage of the dungeon to watch it happen live
 const DELAY = 1.0
@@ -49,7 +49,7 @@ func place_enemies(count: int):
 func generate_dungeon():
 	# Initialize the starting room
 	var start_room = instance_room()
-	start_room.global_position = Vector2(1000,1000)
+	start_room.global_position = Vector2(1000,800)
 	add_child(start_room)
 	placed_rooms.append(start_room)
 	
