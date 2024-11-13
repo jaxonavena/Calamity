@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://cy4xx1hlip17m"]
+
+[ext_resource type="Script" path="res://scenes/projectile.gd" id="1_bghdu"]
+[ext_resource type="Texture2D" uid="uid://d1wva6w4iw2g3" path="res://art/props_itens/bomb_anim_f0.png" id="1_em8n3"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_lpoks"]
+radius = 4.0
+
+[node name="Projectile" type="Node2D"]
+script = ExtResource("1_bghdu")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -1.5)
+scale = Vector2(1, 0.9375)
+texture = ExtResource("1_em8n3")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_lpoks")
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]

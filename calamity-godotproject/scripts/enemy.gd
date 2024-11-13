@@ -12,7 +12,8 @@ func _physics_process(delta):
 	deal_with_damage()
 	
 	if player_chase:
-		position += (player.position - position )/speed
+		var salt = generate_random_offset(50, 50)
+		position += ((player.position + salt) - position )/speed 
 		$AnimatedSprite2D.play("slime run")
 		
 		if (player.position.x - position.x)< 0:
@@ -22,15 +23,20 @@ func _physics_process(delta):
 	else:
 		$AnimatedSprite2D.play("slime idle")
 
+func generate_random_offset(x_range: float, y_range: float) -> Vector2:
+	var random_x = randf_range(-x_range, x_range)
+	var random_y = randf_range(-y_range, y_range)
+	return Vector2(random_x, random_y)
+	
 func _on_detection_area_body_entered(body):
 	player = body
 	player_chase = true
-	print("player chase")
+	#print("player chase")
 	
 func _on_detection_area_body_exited(body):
 	player = null
 	player_chase = false
-	print("stop player chase")
+	#print("stop player chase")
 	
 func enemy():
 	pass
@@ -46,13 +52,13 @@ func _on_enemy_hitbox_body_exited(body):
 		player_in_attack_zone = false
 		#print("player left zone")
 
-func deal_with_damage():
+func deal_with_damage(shot = false):
 	#if global_script.player_current_attack:
 		#print("HYAH!")
 	#if player_in_attack_zone:
 		#print("attack da playa...")
 		
-	if player_in_attack_zone and global_script.player_current_attack == true:
+	if (player_in_attack_zone and global_script.player_current_attack == true) or shot:
 		health = health - 10
 		print("slime health - 10")
 		if health <= 0:

@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
-const speed = 100
+# Player stuff
+const speed = 100	
 var current_dir = "down"
 var enemy_in_attack_range = false
 var enemy_attack_cooldown = true
@@ -8,7 +9,33 @@ var health = 100
 var player_alive = true
 var attack_in_progess = false
 
+# Ranged weapon stuff
+@export var fire_rate: float = 0.5  # Time between shots
+var projectile = preload("res://scenes/projectile.tscn")
+var can_shoot = true  # Whether the player can shoot
 
+func _process(delta):
+	# Shoot projectile when the player presses the shoot button
+	if Input.is_action_pressed("shoot") and can_shoot:
+		shoot_projectile()
+		can_shoot = false
+		# Wait for the next shot
+		#yield(get_tree().create_timer(fire_rate), "timeout")
+		can_shoot = true
+		
+# Function to shoot a projectile
+func shoot_projectile():
+	var projectile_inst = projectile.instantiate()
+	
+	# In the player's shoot function
+	var mouse_position = get_global_mouse_position()
+	var direction = (mouse_position - global_position).normalized()
+	projectile_inst.set_direction(direction)
+	
+	# place the projectile down
+	projectile_inst.position = self.position
+	get_parent().add_child(projectile_inst)
+	
 func _ready():
 	$AnimatedSprite2D.play("front_idle")
 
@@ -27,22 +54,22 @@ func _physics_process(delta):
 		
 		
 func player_movement(delta):
-	if Input.is_action_pressed("ui_right"):
+	if Input.is_action_pressed("ui_right") or Input.is_key_pressed(KEY_D):
 		current_dir = "right"
 		play_animation(1)
 		velocity.x = speed
 		velocity.y = 0
-	elif Input.is_action_pressed("ui_left"):
+	elif Input.is_action_pressed("ui_left") or Input.is_key_pressed(KEY_A):
 		current_dir = "left"
 		play_animation(1)
 		velocity.x = -speed
 		velocity.y = 0
-	elif Input.is_action_pressed("ui_down"):
+	elif Input.is_action_pressed("ui_down") or Input.is_key_pressed(KEY_S):
 		current_dir = "down"
 		play_animation(1)
 		velocity.x = 0
 		velocity.y = speed
-	elif Input.is_action_pressed("ui_up"):
+	elif Input.is_action_pressed("ui_up") or Input.is_key_pressed(KEY_W):
 		current_dir = "up"
 		play_animation(1)
 		velocity.x = 0
@@ -98,7 +125,7 @@ func _on_player_hitbox_body_entered(body):
 		enemy_in_attack_range = true
 
 
-func _on_player_hitbox_body_shape_exited(body):
+func _on_player_hitbox_body_exited(body):
 	if body.has_method("enemy"):
 		enemy_in_attack_range = false
 
