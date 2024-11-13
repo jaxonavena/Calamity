@@ -17,6 +17,7 @@ config/features=PackedStringArray("4.3", "GL Compatibility")
 [autoload]
 
 global_script="*res://scripts/global.gd"
+Audio="*res://scenes/audio.tscn"
 
 [display]
 

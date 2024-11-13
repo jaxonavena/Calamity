@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://b4idm6ah4fc8s"
+path="res://.godot/imported/Darude - Sandstorm.mp3-5d3bb2beb39f0b899573201ad5b0e440.mp3str"
+
+[deps]
+
+source_file="res://Darude - Sandstorm.mp3"
+dest_files=["res://.godot/imported/Darude - Sandstorm.mp3-5d3bb2beb39f0b899573201ad5b0e440.mp3str"]
+
+[params]
+
+loop=true
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

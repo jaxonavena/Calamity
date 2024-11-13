@@ -108,7 +108,7 @@ position = Vector2(169, 101)
 position = Vector2(247, 103)
 
 [node name="enemy2" parent="." instance=ExtResource("3_balui")]
-position = Vector2(329, 63)
+position = Vector2(334, 65)
 
 [node name="Border" type="StaticBody2D" parent="."]
 
