@@ -8,6 +8,7 @@ var player_instance = null
 var previous_floor = null
 var floors_cleared = 0
 var time_survived = 0.0
+var kills = 0
 
 func new_floor():
 	previous_floor.remove_child(player_instance)
