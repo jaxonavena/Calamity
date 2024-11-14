@@ -33,13 +33,31 @@ const NUM_ROOMS = 5
 const ROOM_REMOVAL_PERCENTAGE = 15
 var placed_rooms = []
 var delay = false # Delay the generation of the dungeon to watch it happen live, currently breaks everything if true
-
 const DELAY = 1.0
+
+# StatDisplay
+var stat_display: Control
+var floors_label
+var time_survived_label
+var kills_label
+var coins_label
+var xp_label
 
 func _ready():
 	generate_dungeon()
 	place_player(global_script.player_instance)
 	place_enemies(10)
+	
+	find_stat_labels()
+	update_stats()
+	
+func find_stat_labels():
+	stat_display = get_node(\"CanvasLayer/StatDisplay\") 
+	floors_label = stat_display.get_node(\"FloorsCleared\") 
+	time_survived_label = stat_display.get_node(\"TimeSurvived\") 
+	kills_label = stat_display.get_node(\"Kills\") 
+	coins_label = stat_display.get_node(\"Coins\") 
+	xp_label = stat_display.get_node(\"XP\")
 	
 func calculate_door_distance_offsets(current_room: Node2D):
 	var room_pos = current_room.global_position
@@ -52,11 +70,15 @@ func _process(delta):
 	# Check for Cmd+R or Ctrl+R press to restart the scene
 	if Input.is_action_pressed(\"restart_scene\"):
 		restart_scene()
+	
+	global_script.time_survived += delta
+	update_stats()  # Update stats continuously
 		
 func restart_scene():
 	# Reload the current scene
 	var current_scene = get_tree().current_scene
 	global_script.player_instance = null
+	global_script.reset_player_stats()
 	get_tree().reload_current_scene()
 
 func get_spawn_location() -> Vector2:
@@ -70,8 +92,6 @@ func place_staircase():
 	add_child(stairs)
 
 func random_tile_coord() -> Vector2:
-	print(\"AGAIN\")
-	print(used_positions)
 	var room_coord = used_positions.keys()[randi_range(0, used_positions.size() - 1)]
 	
 	# Generate a random increment of 16 between 0 and 144 for x and y
@@ -261,6 +281,14 @@ func place_borders():
 				# SEE THE DUNGEON ADD BORDERS
 				if delay:
 					await wait_for(DELAY)
+				
+func update_stats():
+	floors_label.text = \"Floors \" + str(global_script.floors_cleared)
+	time_survived_label.text = \"Time: \" + str(ceil(global_script.time_survived))
+	kills_label.text = \"Kills: \" + str(global_script.kills)
+	coins_label.text = \"Coins: \" + str(global_script.player_coins)
+	xp_label.text = \"XP: \" + str(global_script.player_xp)
+	
 "
 
 [node name="DungeonGenerator" type="Node2D"]

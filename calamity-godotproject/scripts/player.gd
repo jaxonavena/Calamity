@@ -96,7 +96,7 @@ func player_movement(delta):
 func restart_scene():
 	# Reload the current scene
 	var current_scene = get_tree().current_scene
-	global_script.player_instance = null
+	global_script.player_instance = null # does this do anything?
 	global_script.reset_player_stats()
 	get_tree().reload_current_scene()
 	
