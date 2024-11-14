@@ -10,6 +10,42 @@ var floors_cleared = 0
 var time_survived = 0.0
 var kills = 0
 
+# High scores
+var best_xp = 0
+var best_floors = 0
+var best_time = 0
+var best_kills = 0
+
+func _process(delta) -> void:
+	check_for_new_high_scores()
+
+func check_for_new_high_scores():
+	if player_xp > best_xp:
+		print("NEW BEST XP;;;;;;")
+		print(best_xp)
+		
+		best_xp = player_xp
+		
+	if floors_cleared > best_floors:
+		print("NEW BEST FLOORS;;;;;;")
+		print(best_floors)
+		
+		best_floors = floors_cleared
+		
+	if time_survived > best_time:
+		#print("NEW BEST TIME;;;;;;")
+		#print(best_time)
+		
+		best_time = time_survived
+		
+		
+	if kills > best_kills:
+		print("NEW BEST KILLS;;;;;;")
+		print(best_kills)
+		
+		best_kills = kills
+	
+	
 func reset_player_stats():
 	player_xp = 0
 	floors_cleared = 0
