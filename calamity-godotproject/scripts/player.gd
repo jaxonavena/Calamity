@@ -38,7 +38,8 @@ func shoot_projectile():
 	projectile_inst.set_direction(direction, self)
 	
 	# place the projectile down
-	projectile_inst.position = self.position
+	projectile_inst.position = $player_hitbox.global_position
+	print($player_hitbox.position)
 	get_parent().add_child(projectile_inst)
 	
 	
