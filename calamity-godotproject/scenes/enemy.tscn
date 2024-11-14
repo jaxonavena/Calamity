@@ -96,6 +96,7 @@ radius = 5.0
 radius = 25.0
 
 [node name="enemy" type="CharacterBody2D"]
+collision_layer = 3
 script = ExtResource("1_os78v")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
@@ -111,7 +112,6 @@ collision_mask = 2
 shape = SubResource("CircleShape2D_ytgpa")
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
-y_sort_enabled = true
 shape = SubResource("CircleShape2D_o46yg")
 
 [node name="enemy_hitbox" type="Area2D" parent="."]
