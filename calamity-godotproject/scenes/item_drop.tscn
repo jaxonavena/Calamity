@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://beupew5wi5pbq"]
 
-[ext_resource type="Script" path="res://scenes/item_drop.gd" id="1_302rb"]
+[ext_resource type="Script" path="res://scripts/item_drop.gd" id="1_302rb"]
 [ext_resource type="Texture2D" uid="uid://d0dtdih3n1ncw" path="res://art/props_itens/bag_coins.png" id="1_jimee"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_2x26h"]

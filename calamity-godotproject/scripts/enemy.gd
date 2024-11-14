@@ -5,7 +5,7 @@ var player_chase = false
 var player = null
 
 var coin_bag = preload("res://scenes/item_drop.tscn")
-var health = 150
+var health = 50
 var player_in_attack_zone = false
 
 func _physics_process(delta):

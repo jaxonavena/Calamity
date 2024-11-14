@@ -57,6 +57,7 @@ func _physics_process(delta):
 		health = 0
 		$AnimatedSprite2D.play("death")
 		print("player is dead")
+		global_script.player_instance = null
 		get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 	
 	elif Input.is_action_just_pressed("toggle_camera"):
