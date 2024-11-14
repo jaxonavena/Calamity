@@ -36,11 +36,13 @@ func set_direction(dir: Vector2, shooter_instance: Node):
 	shooter = shooter_instance
 
 func _on_area_2d_body_entered(body: Node2D) -> void:
-	if shooter.has_method("player") and body.has_method("enemy"):
-		body.deal_with_damage(true)
-		print("player hit a shot")
-		queue_free()
-	elif shooter.has_method("enemy") and body.has_method("player"):
-		body.enemy_attack(true)
-		print("gobs hit a shot")
-		queue_free()
+	pass
+	#if shooter.has_method("player"):
+		#if body.has_method("enemy"):
+			#body.deal_with_damage(true)
+			#print("player hit a shot")
+			#queue_free()
+	#elif shooter.has_method("enemy") and body.has_method("player"):
+		#body.enemy_attack(true)
+		#print("gobs hit")
+		#queue_free()

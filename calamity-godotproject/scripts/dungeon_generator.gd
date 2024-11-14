@@ -8,7 +8,7 @@ var enemy = preload("res://scenes/enemy.tscn")
 var enemyglobin = preload("res://scenes/enemyglobin.tscn")
 var used_positions = {}
 var door_distance_offsets = {}
-const NUM_ROOMS = 5
+const NUM_ROOMS = 10
 const ROOM_REMOVAL_PERCENTAGE = 15
 var placed_rooms = []
 var delay = false # Delay the generation/shrinkage of the dungeon to watch it happen live
@@ -16,10 +16,8 @@ const DELAY = 1.0
 
 func _ready():
 	generate_dungeon()
-	print(";;;;")
-	print(global_script.player_instance)
 	place_player(global_script.player_instance)
-	#place_enemies(50)
+	place_enemies(10)
 	
 func calculate_door_distance_offsets(current_room: Node2D):
 	var room_pos = current_room.global_position
