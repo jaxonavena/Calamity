@@ -39,7 +39,6 @@ func shoot_projectile():
 	
 	# place the projectile down
 	projectile_inst.position = $player_hitbox.global_position
-	print($player_hitbox.position)
 	get_parent().add_child(projectile_inst)
 	
 	
@@ -97,7 +96,8 @@ func player_movement(delta):
 func restart_scene():
 	# Reload the current scene
 	var current_scene = get_tree().current_scene
-	global_script.player_instance = null
+	global_script.player_instance = null # does this do anything?
+	global_script.reset_player_stats()
 	get_tree().reload_current_scene()
 	
 func play_animation(movement):

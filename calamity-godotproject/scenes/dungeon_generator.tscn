@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=4 uid="uid://fvuh24om4h5y"]
+[gd_scene load_steps=19 format=4 uid="uid://fvuh24om4h5y"]
 
 [ext_resource type="PackedScene" uid="uid://c7yisnsvlbei8" path="res://scenes/PR1.tscn" id="2_3kjpu"]
 [ext_resource type="PackedScene" uid="uid://jeer3bdlrrig" path="res://scenes/PR2.tscn" id="3_wwpst"]
@@ -15,6 +15,8 @@
 [ext_resource type="PackedScene" uid="uid://80733phtg4dq" path="res://scenes/PR13.tscn" id="13_8d73e"]
 [ext_resource type="PackedScene" uid="uid://cv1cgdx4q0qwq" path="res://scenes/PR14.tscn" id="14_p37cb"]
 [ext_resource type="TileSet" uid="uid://052wvnx2372h" path="res://tilesets/dungeon_tileset.tres" id="15_cgt0t"]
+[ext_resource type="Script" path="res://scripts/stat_display.gd" id="16_qitlb"]
+[ext_resource type="FontFile" uid="uid://dgklijjyt18vo" path="res://Godot-Fontpack-d244bf6170b399a6d4d26a0d906058ddf2dafdf1/fonts/kirifont/KiriFont.ttf" id="17_uw88n"]
 
 [sub_resource type="GDScript" id="GDScript_5aeyw"]
 script/source = "extends Node2D
@@ -31,13 +33,31 @@ const NUM_ROOMS = 5
 const ROOM_REMOVAL_PERCENTAGE = 15
 var placed_rooms = []
 var delay = false # Delay the generation of the dungeon to watch it happen live, currently breaks everything if true
-
 const DELAY = 1.0
+
+# StatDisplay
+var stat_display: Control
+var floors_label
+var time_survived_label
+var kills_label
+var coins_label
+var xp_label
 
 func _ready():
 	generate_dungeon()
 	place_player(global_script.player_instance)
 	place_enemies(10)
+	
+	find_stat_labels()
+	update_stats()
+	
+func find_stat_labels():
+	stat_display = get_node(\"CanvasLayer/StatDisplay\") 
+	floors_label = stat_display.get_node(\"FloorsCleared\") 
+	time_survived_label = stat_display.get_node(\"TimeSurvived\") 
+	kills_label = stat_display.get_node(\"Kills\") 
+	coins_label = stat_display.get_node(\"Coins\") 
+	xp_label = stat_display.get_node(\"XP\")
 	
 func calculate_door_distance_offsets(current_room: Node2D):
 	var room_pos = current_room.global_position
@@ -50,11 +70,15 @@ func _process(delta):
 	# Check for Cmd+R or Ctrl+R press to restart the scene
 	if Input.is_action_pressed(\"restart_scene\"):
 		restart_scene()
+	
+	global_script.time_survived += delta
+	update_stats()  # Update stats continuously
 		
 func restart_scene():
 	# Reload the current scene
 	var current_scene = get_tree().current_scene
 	global_script.player_instance = null
+	global_script.reset_player_stats()
 	get_tree().reload_current_scene()
 
 func get_spawn_location() -> Vector2:
@@ -68,8 +92,6 @@ func place_staircase():
 	add_child(stairs)
 
 func random_tile_coord() -> Vector2:
-	print(\"AGAIN\")
-	print(used_positions)
 	var room_coord = used_positions.keys()[randi_range(0, used_positions.size() - 1)]
 	
 	# Generate a random increment of 16 between 0 and 144 for x and y
@@ -259,6 +281,14 @@ func place_borders():
 				# SEE THE DUNGEON ADD BORDERS
 				if delay:
 					await wait_for(DELAY)
+				
+func update_stats():
+	floors_label.text = \"Floors \" + str(global_script.floors_cleared)
+	time_survived_label.text = \"Time: \" + str(ceil(global_script.time_survived))
+	kills_label.text = \"Kills: \" + str(global_script.kills)
+	coins_label.text = \"Coins: \" + str(global_script.player_coins)
+	xp_label.text = \"XP: \" + str(global_script.player_xp)
+	
 "
 
 [node name="DungeonGenerator" type="Node2D"]
@@ -269,3 +299,60 @@ room_scenes = [ExtResource("2_3kjpu"), ExtResource("3_wwpst"), ExtResource("4_87
 scale = Vector2(20, 20)
 tile_map_data = PackedByteArray("AAAAAAAAAAAFAAIAAAABAAAAAAAFAAIAAAACAAAAAAAFAAIAAAADAAAAAAAFAAIAAAAEAAAAAAAFAAIAAAAFAAAAAAAFAAIAAAAGAAAAAAAFAAIAAAAFAAEAAAAFAAIAAAAGAAEAAAAFAAIAAAAEAAEAAAAFAAIAAAADAAEAAAAFAAIAAAACAAEAAAAFAAIAAAABAAEAAAAFAAIAAAAAAAEAAAAFAAIAAAAAAAIAAAAFAAIAAAAAAAMAAAAFAAIAAAABAAMAAAAFAAIAAAACAAMAAAAFAAIAAAADAAMAAAAFAAIAAAADAAIAAAAFAAIAAAACAAIAAAAFAAIAAAABAAIAAAAFAAIAAAAEAAIAAAAFAAIAAAAEAAMAAAAFAAIAAAAFAAIAAAAFAAIAAAAFAAMAAAAFAAIAAAAGAAIAAAAFAAIAAAAGAAMAAAAFAAIAAAAEAAQAAAAFAAIAAAAEAAUAAAAFAAIAAAAFAAQAAAAFAAIAAAAFAAUAAAAFAAIAAAAGAAQAAAAFAAIAAAAGAAUAAAAFAAIAAAAEAAYAAAAFAAIAAAAFAAYAAAAFAAIAAAAGAAYAAAAFAAIAAAACAAUAAAAFAAIAAAACAAYAAAAFAAIAAAADAAUAAAAFAAIAAAADAAYAAAAFAAIAAAACAAQAAAAFAAIAAAADAAQAAAAFAAIAAAAAAAQAAAAFAAIAAAAAAAUAAAAFAAIAAAABAAQAAAAFAAIAAAABAAUAAAAFAAIAAAAAAAYAAAAFAAIAAAAAAAcAAAAFAAIAAAABAAYAAAAFAAIAAAABAAcAAAAFAAIAAAACAAcAAAAFAAIAAAADAAcAAAAFAAIAAAAEAAcAAAAFAAIAAAAFAAcAAAAFAAIAAAAGAAcAAAAFAAIAAAAHAAYAAAAFAAIAAAAHAAcAAAAFAAIAAAAIAAYAAAAFAAIAAAAIAAcAAAAFAAIAAAAHAAQAAAAFAAIAAAAHAAUAAAAFAAIAAAAIAAQAAAAFAAIAAAAIAAUAAAAFAAIAAAAHAAIAAAAFAAIAAAAHAAMAAAAFAAIAAAAIAAIAAAAFAAIAAAAIAAMAAAAFAAIAAAAHAAEAAAAFAAIAAAAIAAEAAAAFAAIAAAAHAAAAAAAFAAIAAAAIAAAAAAAFAAIAAAA=")
 tile_set = ExtResource("15_cgt0t")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="StatDisplay" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1993.0
+offset_bottom = 1960.0
+script = ExtResource("16_qitlb")
+
+[node name="FloorsCleared" type="Label" parent="CanvasLayer/StatDisplay"]
+layout_mode = 0
+offset_left = 65.0
+offset_top = 34.0
+offset_right = 332.0
+offset_bottom = 85.0
+theme_override_fonts/font = ExtResource("17_uw88n")
+theme_override_font_sizes/font_size = 50
+text = "Floors: "
+
+[node name="TimeSurvived" type="Label" parent="CanvasLayer/StatDisplay"]
+layout_mode = 0
+offset_left = 512.0
+offset_top = 34.0
+offset_right = 640.0
+offset_bottom = 70.0
+theme_override_fonts/font = ExtResource("17_uw88n")
+theme_override_font_sizes/font_size = 50
+text = "Time:"
+
+[node name="Kills" type="Label" parent="CanvasLayer/StatDisplay"]
+layout_mode = 0
+offset_left = 65.0
+offset_top = 85.0
+offset_right = 192.0
+offset_bottom = 120.0
+theme_override_font_sizes/font_size = 25
+text = "Kills:"
+
+[node name="Coins" type="Label" parent="CanvasLayer/StatDisplay"]
+layout_mode = 0
+offset_left = 512.0
+offset_top = 85.0
+offset_right = 640.0
+offset_bottom = 120.0
+theme_override_font_sizes/font_size = 25
+text = "Coins:
+"
+
+[node name="XP" type="Label" parent="CanvasLayer/StatDisplay"]
+layout_mode = 0
+offset_left = 65.0
+offset_top = 120.0
+offset_right = 193.0
+offset_bottom = 148.0
+theme_override_font_sizes/font_size = 20
+text = "XP:"

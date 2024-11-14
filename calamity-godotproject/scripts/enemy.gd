@@ -62,6 +62,7 @@ func deal_with_damage(shot = false):
 func die():
 	drop_items()
 	update_player_xp()
+	global_script.kills += 1
 	self.queue_free()
 
 func drop_items():
