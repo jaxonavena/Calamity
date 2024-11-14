@@ -13,6 +13,7 @@ var projectile_hit = false
 # Ranged weapon stuff
 @export var fire_rate: float = 0.5  # Time between shots
 var projectile = preload("res://scenes/projectile.tscn")
+var next_floor = preload("res://scenes/dungeon_generator.tscn")
 var can_shoot = true  # Whether the player can shoot
 
 func _process(delta):
@@ -20,10 +21,13 @@ func _process(delta):
 	if Input.is_action_pressed("shoot") and can_shoot:
 		shoot_projectile()
 		can_shoot = false
+    
 		# Wait for the next shot
-		#yield(get_tree().create_timer(fire_rate), "timeout")
 		$projectile_timer.start()
-		
+		#await wait_for(0.2)
+    
+		can_shoot = true
+
 		
 # Function to shoot a projectile
 func shoot_projectile():
@@ -80,10 +84,8 @@ func player_movement(delta):
 		play_animation(1)
 		velocity.x = 0
 		velocity.y = -speed
-	#elif Input.is_action_just_pressed("ui_end"):
-		#get_tree().quit()
-	
-		
+	elif global_script.player_can_use_stairs and Input.is_key_pressed(KEY_E):
+		global_script.new_floor()
 	else:
 		play_animation(0)
 		velocity.x = 0
@@ -91,7 +93,12 @@ func player_movement(delta):
 		
 	move_and_slide()
 
-
+func restart_scene():
+	# Reload the current scene
+	var current_scene = get_tree().current_scene
+	global_script.player_instance = null
+	get_tree().reload_current_scene()
+	
 func play_animation(movement):
 	var dir = current_dir
 	var anim = $AnimatedSprite2D
@@ -150,8 +157,7 @@ func enemy_attack(shot = false):
 
 func _on_enemy_attackcooldown_timeout():
 	enemy_attack_cooldown = true
-	
-	
+
 
 func attack():
 	var dir = current_dir
@@ -176,9 +182,8 @@ func attack():
 			$attack_timer.start()
 		
 		
-		
-		
-
+func wait_for(time: float):
+	await get_tree().create_timer(time).timeout 
 
 func _on_attack_timer_timeout():
 	$attack_timer.stop()
