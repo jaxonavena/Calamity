@@ -21,11 +21,10 @@ func _process(delta):
 	if Input.is_action_pressed("shoot") and can_shoot:
 		shoot_projectile()
 		can_shoot = false
-    
+	
 		# Wait for the next shot
-		$projectile_timer.start()
-		#await wait_for(0.2)
-    
+		await wait_for(0.2)
+	
 		can_shoot = true
 
 		
