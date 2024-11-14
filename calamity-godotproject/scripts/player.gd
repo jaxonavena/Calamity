@@ -150,7 +150,7 @@ func _on_player_hitbox_body_exited(body):
 
 func enemy_attack(shot = false):
 	if (enemy_in_attack_range and enemy_attack_cooldown == true) or shot:
-		health = health - 10;
+		health = health - 5;
 		enemy_attack_cooldown = false
 		$enemy_attackcooldown.start()
 		print("player taken damage\n")
