@@ -8,6 +8,7 @@ var enemy_attack_cooldown = true
 var health = 100
 var player_alive = true
 var attack_in_progess = false
+var projectile_hit = false
 
 # Ranged weapon stuff
 @export var fire_rate: float = 0.5  # Time between shots
@@ -21,7 +22,8 @@ func _process(delta):
 		can_shoot = false
 		# Wait for the next shot
 		#yield(get_tree().create_timer(fire_rate), "timeout")
-		can_shoot = true
+		$projectile_timer.start()
+		
 		
 # Function to shoot a projectile
 func shoot_projectile():
@@ -30,11 +32,12 @@ func shoot_projectile():
 	# In the player's shoot function
 	var mouse_position = get_global_mouse_position()
 	var direction = (mouse_position - global_position).normalized()
-	projectile_inst.set_direction(direction)
+	projectile_inst.set_direction(direction, self)
 	
 	# place the projectile down
 	projectile_inst.position = self.position
 	get_parent().add_child(projectile_inst)
+	
 	
 func _ready():
 	$Camera2D.enabled = false
@@ -127,14 +130,18 @@ func player():
 func _on_player_hitbox_body_entered(body):
 	if body.has_method("enemy"):
 		enemy_in_attack_range = true
+	elif body.has_method("projectile"):
+		projectile_hit = true
 
 
 func _on_player_hitbox_body_exited(body):
 	if body.has_method("enemy"):
 		enemy_in_attack_range = false
+	elif body.has_method("projectile"):
+		projectile_hit = false
 
-func enemy_attack():
-	if enemy_in_attack_range and enemy_attack_cooldown == true:
+func enemy_attack(shot = false):
+	if (enemy_in_attack_range and enemy_attack_cooldown == true) or shot:
 		health = health - 10;
 		enemy_attack_cooldown = false
 		$enemy_attackcooldown.start()
@@ -143,7 +150,8 @@ func enemy_attack():
 
 func _on_enemy_attackcooldown_timeout():
 	enemy_attack_cooldown = true
-
+	
+	
 
 func attack():
 	var dir = current_dir
@@ -176,3 +184,7 @@ func _on_attack_timer_timeout():
 	$attack_timer.stop()
 	global_script.player_current_attack = false
 	attack_in_progess = false
+
+
+func _on_projectile_timer_timeout():
+	can_shoot = true

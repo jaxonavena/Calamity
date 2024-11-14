@@ -4,6 +4,7 @@ extends Node2D
 var border_room = preload("res://scenes/border_room.tscn")
 var player = preload("res://scenes/player.tscn")
 var enemy = preload("res://scenes/enemy.tscn")
+var enemyglobin = preload("res://scenes/enemyglobin.tscn")
 var used_positions = {}
 var door_distance_offsets = {}
 const NUM_ROOMS = 5
@@ -50,6 +51,9 @@ func place_enemies(count: int):
 		var enemy_instance = enemy.instantiate()
 		enemy_instance.position = get_spawn_location()
 		add_child(enemy_instance)
+		var enemyglobin_instance = enemyglobin.instantiate()
+		enemyglobin_instance.position = get_spawn_location()
+		add_child(enemyglobin_instance)
 	
 func generate_dungeon():
 	# Initialize the starting room

@@ -1,11 +1,12 @@
 extends Node2D
 
-@export var speed: float = 400
+@export var speed: float = 250
 @export var damage: int = 10
 @export var lifetime: float = 2.0
 @onready var lifetime_timer = Timer.new()
 
 var direction: Vector2
+var shooter: Node
 
 func _ready():
 	# Start moving the projectile
@@ -16,7 +17,9 @@ func _ready():
 	lifetime_timer.one_shot = true
 	lifetime_timer.connect("timeout", Callable(self, "on_lifetime_timeout"))
 	add_child(lifetime_timer)
-	lifetime_timer.start()
+	
+func projectile():
+	pass
 
 # Callback when the lifetime of the projectile ends
 func on_lifetime_timeout():
@@ -28,10 +31,16 @@ func _process(delta):
 	position += direction * speed * delta
 
 # Function to set the direction of the projectile
-func set_direction(dir: Vector2):
+func set_direction(dir: Vector2, shooter_instance: Node):
 	direction = dir.normalized()
+	shooter = shooter_instance
 
 func _on_area_2d_body_entered(body: Node2D) -> void:
-	if body.has_method("enemy"):
+	if shooter.has_method("player") and body.has_method("enemy"):
 		body.deal_with_damage(true)
+		print("player hit a shot")
+		queue_free()
+	elif shooter.has_method("enemy") and body.has_method("player"):
+		body.enemy_attack(true)
+		print("gobs hit a shot")
 		queue_free()
