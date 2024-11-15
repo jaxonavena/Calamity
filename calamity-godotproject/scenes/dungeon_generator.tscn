@@ -46,103 +46,34 @@ var xp_label
 # DebugDisplay
 var mouse_pos_label
 
-
+# SPECIAL --------------------------------------------------------------------------------------------------------------
 func _ready():
 	generate_dungeon()
 	place_player(global_script.player_instance)
 	place_enemies(10)
 	
+	# UI
 	find_stat_labels()
 	find_debug_labels()
 	update_stats()
-
 	
 func _process(delta):
-	# Check for Cmd+R or Ctrl+R press to restart the scene
+	# cmd+R or ctrl+R press to restart the scene
 	if Input.is_action_pressed(\"restart_scene\"):
 		restart_scene()
 	
 	global_script.time_survived += delta
-	update_stats()  # Update stats continuously
+	update_stats()
 	update_mouse_pos()
-		
+	
 func restart_scene():
 	# Reload the current scene
 	var current_scene = get_tree().current_scene
 	global_script.player_instance = null
 	global_script.reset_player_stats()
 	get_tree().reload_current_scene()
-
-func get_spawn_location() -> Vector2: # Pick a spawn spot for characters
-	var salt = Vector2(randi_range(5, 160), randi_range(5, 160))
-	return used_positions.keys()[randi_range(0, used_positions.size() - 1)] + salt
 	
-func get_random_tile() -> Vector2:
-	var room_coord = used_positions.keys()[randi_range(0, used_positions.size() - 1)]
-	
-	# Generate a random increment of 16 between 0 and 144 for x and y
-	var x_increment = randi() % 10 * 16 # (0 to 9) * 16 gives increments from 0 to 144
-	var y_increment = randi() % 10 * 16
-	return room_coord + Vector2(x_increment, y_increment)
-	
-func is_spawnable_tile(spawn_location: Vector2) -> bool:
-	var tile_set = $TileMapLayer.get_tile_set()
-	print(tile_set)
-	var tileset_coordinates = $TileMapLayer.local_to_map(spawn_location)
-	print(\"tileset coords\")
-	print(tileset_coordinates)
-	var tile_id = $TileMapLayer.get_cell(tileset_coordinates.x, tileset_coordinates.y)
-	
-	var data = $TileMapLayer.get_cell_tile_data(tileset_coordinates)
-	print(\"DATA\")
-	print(data)
-	if data:
-		print(\"checking spawnable\")
-		print(data.get_custom_data(\"not_spawnable\"))
-		return data.get_custom_data(\"not_spawnable\")
-	else:
-		print(\"no data man\")
-		return true
-
-func get_valid_spawn_location() -> Vector2:
-	var spawn_location = get_random_tile() # -> Vector 2
-	print(\"GLOBAL SPAWN LOC:\")
-	print(spawn_location)
-	var converter_node = Node2D.new() # Has .to_local()
-	if is_spawnable_tile(converter_node.to_local(spawn_location)):
-		print(\"finally\")
-		return spawn_location
-	else:
-		print(\"recurse\")
-		return get_valid_spawn_location()
-		
-func place_staircase():
-	var tile_coord = get_random_tile()
-	var stairs = staircase.instantiate()
-	stairs.global_position = tile_coord
-	add_child(stairs)
-	
-func place_player(player_instance: CharacterBody2D = null):
-	var spawn_location = get_valid_spawn_location()
-	if player_instance: # Player is moving on to the next floor
-		player_instance.position = spawn_location
-		add_child(player_instance)
-	else: # Player is starting a new attempt
-		player_instance = player.instantiate()
-		player_instance.position = spawn_location
-		add_child(player_instance)
-		global_script.player_instance = player_instance
-	
-func place_enemies(count: int):
-	for i in range(count):
-		var slime_instance = enemy.instantiate()
-		slime_instance.position = get_spawn_location()
-		add_child(slime_instance)
-		
-		var enemyglobin_instance = enemyglobin.instantiate()
-		enemyglobin_instance.position = get_spawn_location()
-		add_child(enemyglobin_instance)
-	
+# DUNGEON (build overall map) --------------------------------------------------------------------------------------------------------------
 func generate_dungeon():
 	var start_room = init_dungeon()
 	
@@ -304,7 +235,82 @@ func place_borders():
 				# SEE THE DUNGEON ADD BORDERS
 				if delay:
 					await wait_for(DELAY)
+					
+					
+# SPAWNING (player, enemies, stairs) --------------------------------------------------------------------------------------------------------------
+func get_spawn_location() -> Vector2: # Pick a spawn spot for characters
+	var salt = Vector2(randi_range(5, 160), randi_range(5, 160))
+	return used_positions.keys()[randi_range(0, used_positions.size() - 1)] + salt
+	
+func get_random_tile() -> Vector2:
+	var room_coord = used_positions.keys()[randi_range(0, used_positions.size() - 1)]
+	
+	# Generate a random increment of 16 between 0 and 144 for x and y
+	var x_increment = randi() % 10 * 16 # (0 to 9) * 16 gives increments from 0 to 144
+	var y_increment = randi() % 10 * 16
+	return room_coord + Vector2(x_increment, y_increment)
+	
 
+func is_spawnable_tile(spawn_location: Vector2) -> bool:
+	var tile_map_layer = get_node(\"DungeonBase\")
+	var local_position = tile_map_layer.to_local(spawn_location)
+	
+	var cell = tile_map_layer.local_to_map(local_position)
+	print(\"CELL\")
+	print(cell)
+	
+	var data = tile_map_layer.get_cell_tile_data(cell)
+	print(\"DATA\")
+	print(data)
+	
+	if data:
+		print(\"checking spawnable\")
+		print(!data.get_custom_data(\"not_spawnable\"))
+		return !data.get_custom_data(\"not_spawnable\") # I did not_spawnable instead of spawnable so we have to manually mark less tiles in the TileSet
+	else:
+		# We shouldn't hit this ever with valid global coords
+		print(\"ERROR - Shouldn't be hitting this point. No TileData.\")
+		return true
+
+func get_valid_spawn_location() -> Vector2:
+	var spawn_location = get_random_tile() # -> Vector 2
+	print(\"GLOBAL SPAWN LOC:\")
+	print(spawn_location)
+	if is_spawnable_tile(spawn_location):
+		print(\"It's spawnable\")
+		return spawn_location
+	else:
+		print(\"recurse\")
+		return get_valid_spawn_location()
+		
+func place_staircase():
+	var tile_coord = get_random_tile()
+	var stairs = staircase.instantiate()
+	stairs.global_position = tile_coord
+	add_child(stairs)
+	
+func place_player(player_instance: CharacterBody2D = null):
+	var spawn_location = get_valid_spawn_location()
+	if player_instance: # Player is moving on to the next floor
+		player_instance.position = spawn_location
+		add_child(player_instance)
+	else: # Player is starting a new attempt
+		player_instance = player.instantiate()
+		player_instance.position = spawn_location
+		add_child(player_instance)
+		global_script.player_instance = player_instance
+	
+func place_enemies(count: int):
+	for i in range(count):
+		var slime_instance = enemy.instantiate()
+		slime_instance.position = get_spawn_location()
+		add_child(slime_instance)
+		
+		var enemyglobin_instance = enemyglobin.instantiate()
+		enemyglobin_instance.position = get_spawn_location()
+		add_child(enemyglobin_instance)
+
+# UI --------------------------------------------------------------------------------------------------------------
 func find_stat_labels():
 	stat_display = get_node(\"CanvasLayer/StatDisplay\") 
 	floors_label = stat_display.get_node(\"FloorsCleared\") 
@@ -333,7 +339,7 @@ func update_mouse_pos():
 script = SubResource("GDScript_5aeyw")
 room_scenes = [ExtResource("2_3kjpu"), ExtResource("3_wwpst"), ExtResource("4_87sco"), ExtResource("5_s571o"), ExtResource("6_kbodt"), ExtResource("7_d5eey"), ExtResource("8_8e82t"), ExtResource("9_sfhq4"), ExtResource("10_ov3yx"), ExtResource("10_oddol"), ExtResource("11_1hv85"), ExtResource("12_lb7t0"), ExtResource("13_8d73e"), ExtResource("14_p37cb")]
 
-[node name="TileMapLayer" type="TileMapLayer" parent="."]
+[node name="DungeonBase" type="TileMapLayer" parent="."]
 scale = Vector2(20, 20)
 tile_map_data = PackedByteArray("AAAAAAAAAAAFAAIAAAABAAAAAAAFAAIAAAACAAAAAAAFAAIAAAADAAAAAAAFAAIAAAAEAAAAAAAFAAIAAAAFAAAAAAAFAAIAAAAGAAAAAAAFAAIAAAAFAAEAAAAFAAIAAAAGAAEAAAAFAAIAAAAEAAEAAAAFAAIAAAADAAEAAAAFAAIAAAACAAEAAAAFAAIAAAABAAEAAAAFAAIAAAAAAAEAAAAFAAIAAAAAAAIAAAAFAAIAAAAAAAMAAAAFAAIAAAABAAMAAAAFAAIAAAACAAMAAAAFAAIAAAADAAMAAAAFAAIAAAADAAIAAAAFAAIAAAACAAIAAAAFAAIAAAABAAIAAAAFAAIAAAAEAAIAAAAFAAIAAAAEAAMAAAAFAAIAAAAFAAIAAAAFAAIAAAAFAAMAAAAFAAIAAAAGAAIAAAAFAAIAAAAGAAMAAAAFAAIAAAAEAAQAAAAFAAIAAAAEAAUAAAAFAAIAAAAFAAQAAAAFAAIAAAAFAAUAAAAFAAIAAAAGAAQAAAAFAAIAAAAGAAUAAAAFAAIAAAAEAAYAAAAFAAIAAAAFAAYAAAAFAAIAAAAGAAYAAAAFAAIAAAACAAUAAAAFAAIAAAACAAYAAAAFAAIAAAADAAUAAAAFAAIAAAADAAYAAAAFAAIAAAACAAQAAAAFAAIAAAADAAQAAAAFAAIAAAAAAAQAAAAFAAIAAAAAAAUAAAAFAAIAAAABAAQAAAAFAAIAAAABAAUAAAAFAAIAAAAAAAYAAAAFAAIAAAAAAAcAAAAFAAIAAAABAAYAAAAFAAIAAAABAAcAAAAFAAIAAAACAAcAAAAFAAIAAAADAAcAAAAFAAIAAAAEAAcAAAAFAAIAAAAFAAcAAAAFAAIAAAAGAAcAAAAFAAIAAAAHAAYAAAAFAAIAAAAHAAcAAAAFAAIAAAAIAAYAAAAFAAIAAAAIAAcAAAAFAAIAAAAHAAQAAAAFAAIAAAAHAAUAAAAFAAIAAAAIAAQAAAAFAAIAAAAIAAUAAAAFAAIAAAAHAAIAAAAFAAIAAAAHAAMAAAAFAAIAAAAIAAIAAAAFAAIAAAAIAAMAAAAFAAIAAAAHAAEAAAAFAAIAAAAIAAEAAAAFAAIAAAAHAAAAAAAFAAIAAAAIAAAAAAAFAAIAAAA=")
 tile_set = ExtResource("15_cgt0t")
