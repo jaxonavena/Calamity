@@ -22,6 +22,7 @@ func _physics_process(delta):
 			$AnimatedSprite2D.flip_h = false
 	else:
 		$AnimatedSprite2D.play("slime idle")
+	move_and_slide()
 
 func generate_random_offset(x_range: float, y_range: float) -> Vector2:
 	var random_x = randf_range(-x_range, x_range)

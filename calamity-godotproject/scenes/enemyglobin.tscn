@@ -105,7 +105,7 @@ animations = [{
 radius = 215.058
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_o46yg"]
-radius = 5.0
+radius = 6.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_dugog"]
 radius = 25.0
@@ -126,6 +126,8 @@ collision_mask = 2
 shape = SubResource("CircleShape2D_ytgpa")
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
+process_priority = 1
+process_physics_priority = 1
 y_sort_enabled = true
 shape = SubResource("CircleShape2D_o46yg")
 

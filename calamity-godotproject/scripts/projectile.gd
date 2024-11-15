@@ -1,4 +1,5 @@
-extends Node2D
+extends CharacterBody2D
+
 
 @export var speed: float = 250
 @export var damage: int = 10
@@ -29,6 +30,7 @@ func on_lifetime_timeout():
 func _process(delta):
 	# Move the projectile in the direction it's facing
 	position += direction * speed * delta
+	
 
 # Function to set the direction of the projectile
 func set_direction(dir: Vector2, shooter_instance: Node):
@@ -37,6 +39,7 @@ func set_direction(dir: Vector2, shooter_instance: Node):
 
 func _on_area_2d_body_entered(body: Node2D) -> void:
 	#pass
+	
 	if is_instance_valid(shooter):
 		if shooter.has_method("player") and body.has_method("enemy"):
 				body.deal_with_damage(true)
@@ -48,3 +51,13 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 			queue_free()
 	else: 
 		print("shooter dead asf")
+		
+
+
+func _on_wall_collision_body_entered(body) -> void:
+	 # Assuming layer 1 is for walls
+	if is_instance_valid(shooter):
+		if not(body.has_method("player")) and not(body.has_method("enemy")):
+			queue_free()
+	else:
+		queue_free()

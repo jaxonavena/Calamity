@@ -17,7 +17,7 @@ const DELAY = 1.0
 func _ready():
 	generate_dungeon()
 	place_player(global_script.player_instance)
-	place_enemies(10)
+	place_enemies(50)
 	
 func calculate_door_distance_offsets(current_room: Node2D):
 	var room_pos = current_room.global_position
