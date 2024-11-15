@@ -49,7 +49,9 @@ var mouse_pos_label
 # SPECIAL --------------------------------------------------------------------------------------------------------------
 func _ready():
 	generate_dungeon()
+	print(\"PLAYER\")
 	place_player(global_script.player_instance)
+	print(\"ENEMIES...\")
 	place_enemies(10)
 	
 	# UI
@@ -80,6 +82,7 @@ func generate_dungeon():
 	place_connected_rooms(start_room, NUM_ROOMS) #recursive
 	remove_some_rooms(ROOM_REMOVAL_PERCENTAGE) # input the percentage of rooms you want to remove
 	place_borders() # walls off the dungeon
+	print(\"STAIRS\")
 	place_staircase()
 	
 	global_script.previous_floor = get_tree().current_scene
@@ -270,7 +273,7 @@ func is_spawnable_tile(spawn_location: Vector2) -> bool:
 	else:
 		# We shouldn't hit this ever with valid global coords
 		print(\"ERROR - Shouldn't be hitting this point. No TileData.\")
-		return true
+		return true # avoids maximum recursion depth error
 
 func get_valid_spawn_location() -> Vector2:
 	var spawn_location = get_random_tile() # -> Vector 2
@@ -284,7 +287,7 @@ func get_valid_spawn_location() -> Vector2:
 		return get_valid_spawn_location()
 		
 func place_staircase():
-	var tile_coord = get_random_tile()
+	var tile_coord = get_valid_spawn_location()
 	var stairs = staircase.instantiate()
 	stairs.global_position = tile_coord
 	add_child(stairs)
@@ -303,11 +306,11 @@ func place_player(player_instance: CharacterBody2D = null):
 func place_enemies(count: int):
 	for i in range(count):
 		var slime_instance = enemy.instantiate()
-		slime_instance.position = get_spawn_location()
+		slime_instance.position = get_valid_spawn_location()
 		add_child(slime_instance)
 		
 		var enemyglobin_instance = enemyglobin.instantiate()
-		enemyglobin_instance.position = get_spawn_location()
+		enemyglobin_instance.position = get_valid_spawn_location()
 		add_child(enemyglobin_instance)
 
 # UI --------------------------------------------------------------------------------------------------------------
