@@ -31,6 +31,7 @@ func _physics_process(delta):
 	else:
 		$AnimatedSprite2D.play("globin idle")
 		
+	move_and_slide()
 # Function to shoot a projectile
 func shoot_projectile(body):
 	
@@ -53,8 +54,9 @@ func generate_random_offset(x_range: float, y_range: float) -> Vector2:
 	return Vector2(random_x, random_y)
 	
 func _on_detection_area_body_entered(body):
-	player = body
-	player_chase = true
+	if body.has_method("player"):
+		player = body
+		player_chase = true
 
 
 
@@ -62,8 +64,9 @@ func _on_detection_area_body_entered(body):
 	#print("player chase")
 	
 func _on_detection_area_body_exited(body):
-	player = null
-	player_chase = false
+	if body.has_method("player"):
+		player = null
+		player_chase = false
 	
 	#print("stop player chase")
 	

@@ -23,19 +23,22 @@ func _physics_process(delta):
 	else:
 		$AnimatedSprite2D.play("slime idle")
 
+	move_and_slide()
 func generate_random_offset(x_range: float, y_range: float) -> Vector2:
 	var random_x = randf_range(-x_range, x_range)
 	var random_y = randf_range(-y_range, y_range)
 	return Vector2(random_x, random_y)
 	
 func _on_detection_area_body_entered(body):
-	player = body
-	player_chase = true
+	if body.has_method("player"):
+		player = body
+		player_chase = true
 	#print("player chase")
 	
 func _on_detection_area_body_exited(body):
-	player = null
-	player_chase = false
+	if body.has_method("player"):
+		player = null
+		player_chase = false
 	#print("stop player chase")
 	
 func enemy():
