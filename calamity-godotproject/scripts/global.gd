@@ -23,26 +23,21 @@ func check_for_new_high_scores():
 	if player_xp > best_xp:
 		print("NEW BEST XP;;;;;;")
 		print(best_xp)
-		
 		best_xp = player_xp
 		
 	if floors_cleared > best_floors:
 		print("NEW BEST FLOORS;;;;;;")
 		print(best_floors)
-		
 		best_floors = floors_cleared
 		
 	if time_survived > best_time:
 		#print("NEW BEST TIME;;;;;;")
 		#print(best_time)
-		
 		best_time = time_survived
-		
 		
 	if kills > best_kills:
 		print("NEW BEST KILLS;;;;;;")
 		print(best_kills)
-		
 		best_kills = kills
 	
 	

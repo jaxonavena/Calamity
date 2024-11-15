@@ -40,11 +40,11 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 	if is_instance_valid(shooter):
 		if shooter.has_method("player") and body.has_method("enemy"):
 				body.deal_with_damage(true)
-				print("player hit a shot")
+				#print("player hit a shot")
 				queue_free()
 		elif shooter.has_method("enemy") and body.has_method("player"):
 			body.enemy_attack(true)
-			print("gobs hit")
+			#print("gobs hit")
 			queue_free()
-	else: 
-		print("shooter dead asf")
+	#else: 
+		#print("shooter dead asf")
