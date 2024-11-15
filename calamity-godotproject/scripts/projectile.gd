@@ -59,5 +59,3 @@ func _on_wall_collision_body_entered(body) -> void:
 	if is_instance_valid(shooter):
 		if not(body.has_method("player")) and not(body.has_method("enemy")):
 			queue_free()
-	else:
-		queue_free()
