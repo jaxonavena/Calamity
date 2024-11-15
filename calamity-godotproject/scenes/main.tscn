@@ -120,6 +120,7 @@ collision_mask = 3
 
 [node name="enemy2" parent="." instance=ExtResource("3_balui")]
 position = Vector2(334, 65)
+collision_layer = 1
 
 [node name="Border" type="StaticBody2D" parent="."]
 
@@ -132,3 +133,4 @@ collision_layer = 3
 
 [node name="Projectile" parent="." instance=ExtResource("6_t56a7")]
 position = Vector2(14, 23)
+collision_layer = 9

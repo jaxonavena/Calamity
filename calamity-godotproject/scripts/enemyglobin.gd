@@ -31,6 +31,7 @@ func _physics_process(delta):
 	else:
 		$AnimatedSprite2D.play("globin idle")
 		
+	move_and_slide()
 # Function to shoot a projectile
 func shoot_projectile(body):
 	
