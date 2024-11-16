@@ -32,6 +32,10 @@ project/assembly_name="Calamity-GodotProject"
 
 version_control/autoload_on_startup=true
 
+[global_group]
+
+spawnable_room=""
+
 [input]
 
 attack={

@@ -153,7 +153,7 @@ func enemy_attack(shot = false):
 		health = health - 5;
 		enemy_attack_cooldown = false
 		$enemy_attackcooldown.start()
-		print("player taken damage\n")
+		#print("player taken damage\n")
 
 
 func _on_enemy_attackcooldown_timeout():
