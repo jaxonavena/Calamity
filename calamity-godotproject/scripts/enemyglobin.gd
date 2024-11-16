@@ -103,8 +103,6 @@ func drop_items():
 func update_player_xp():
 	var xp = randi_range(3, 20)
 	global_script.player_xp = global_script.player_xp + xp
-	print("XP:")
-	print(global_script.player_xp)
 
 
 func _on_projectile_timer_timeout() -> void:

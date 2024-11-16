@@ -8,90 +8,63 @@ var enemy = preload("res://scenes/enemy.tscn")
 var enemyglobin = preload("res://scenes/enemyglobin.tscn")
 var used_positions = {}
 var door_distance_offsets = {}
-const NUM_ROOMS = 10
-const ROOM_REMOVAL_PERCENTAGE = 15
+const NUM_ROOMS = 5 #5
+const ROOM_REMOVAL_PERCENTAGE = 15 #15
 var placed_rooms = []
-var delay = false # Delay the generation/shrinkage of the dungeon to watch it happen live
+var delay = false # Delay the generation of the dungeon to watch it happen live, currently breaks everything if true
 const DELAY = 1.0
 
+# StatDisplay
+var stat_display: Control
+var floors_label
+var time_survived_label
+var kills_label
+var coins_label
+var xp_label
+
+# DebugDisplay
+var mouse_pos_label
+
+# SPECIAL --------------------------------------------------------------------------------------------------------------
 func _ready():
 	generate_dungeon()
+	print("PLAYER")
 	place_player(global_script.player_instance)
+	print("ENEMIES...")
 	place_enemies(10)
 	
-func calculate_door_distance_offsets(current_room: Node2D):
-	var room_pos = current_room.global_position
-	var current_doors = get_door_markers(current_room)
-	for door in current_doors:
-		var pos = door.global_position
-		door_distance_offsets[door.name] = pos - room_pos
+	# UI
+	find_stat_labels()
+	find_debug_labels()
+	update_stats()
 	
 func _process(delta):
-	# Check for Cmd+R or Ctrl+R press to restart the scene
+	# cmd+R or ctrl+R press to restart the scene
 	if Input.is_action_pressed("restart_scene"):
 		restart_scene()
-		
+	
+	global_script.time_survived += delta
+	update_stats()
+	update_mouse_pos()
+	
 func restart_scene():
 	# Reload the current scene
 	var current_scene = get_tree().current_scene
 	global_script.player_instance = null
+	global_script.reset_player_stats()
 	get_tree().reload_current_scene()
-
-func get_spawn_location() -> Vector2:
-	var salt = Vector2(randi_range(5, 160), randi_range(5, 160))
-	return used_positions.keys()[randi_range(0, used_positions.size() - 1)] + salt
 	
-func place_staircase():
-	var tile_coord = random_tile_coord()
-	var stairs = staircase.instantiate()
-	stairs.global_position = tile_coord
-	add_child(stairs)
-
-func random_tile_coord() -> Vector2:
-	var room_coord = used_positions.keys()[randi_range(0, used_positions.size() - 1)]
-	
-	# Generate a random increment of 16 between 0 and 144 for x and y
-	var x_increment = randi() % 10 * 16 # (0 to 9) * 16 gives increments from 0 to 144
-	var y_increment = randi() % 10 * 16
-	return room_coord + Vector2(x_increment, y_increment)
-	
-func place_player(player_instance: CharacterBody2D = null):
-	if player_instance:
-		print("Using old player")
-		# Place the existing player on the next floor
-		player_instance.position = get_spawn_location()
-		add_child(player_instance)
-	else:
-		print("New player")
-		# Create and position the player
-		player_instance = player.instantiate()
-		player_instance.position = get_spawn_location()
-		add_child(player_instance)
-		print("PLAYER INST")
-		print(player_instance)
-		global_script.player_instance = player_instance
-	
-func place_enemies(count: int):
-	for i in range(count):
-		# Create and position the enemy
-		var enemy_instance = enemy.instantiate()
-		enemy_instance.position = get_spawn_location()
-		add_child(enemy_instance)
-		var enemyglobin_instance = enemyglobin.instantiate()
-		enemyglobin_instance.position = get_spawn_location()
-		add_child(enemyglobin_instance)
-	
+# DUNGEON (build overall map) --------------------------------------------------------------------------------------------------------------
 func generate_dungeon():
 	var start_room = init_dungeon()
 	
-	# Start placing connected rooms
-	place_connected_rooms(start_room, NUM_ROOMS)
+	place_connected_rooms(start_room, NUM_ROOMS) #recursive
 	remove_some_rooms(ROOM_REMOVAL_PERCENTAGE) # input the percentage of rooms you want to remove
-	place_borders()
+	place_borders() # walls off the dungeon
+	print("STAIRS")
 	place_staircase()
 	
 	global_script.previous_floor = get_tree().current_scene
-
 
 func init_dungeon() -> Node2D:
 	# Initialize the starting room
@@ -130,16 +103,30 @@ func place_connected_rooms(current_room: Node2D, remaining_rooms: int):
 			continue  # Skip if there's already a connection here
 				
 		add_child(new_room)
+		
 		placed_rooms.append(new_room)
 		used_positions[new_room.global_position] = new_room
-
-		# UNCOMMENT THIS TO SEE THE DUNGEON GROW
-		#if delay:
-			#await wait_for(DELAY)
 		
+		# SEE THE DUNGEON GROW
+		# This breaks everything for some reason
+		if delay:
+			await wait_for(DELAY)
+			
+		# THis also might break everything, but might be ok
+		var break_early = randi_range(1, 100)
+		if break_early <= 10: #25% chance to not place four rooms around
+			continue
+			
 		# Recursively place more rooms
 		place_connected_rooms(new_room, remaining_rooms - 1)
 
+func calculate_door_distance_offsets(current_room: Node2D):
+	var room_pos = current_room.global_position
+	var current_doors = get_door_markers(current_room)
+	for door in current_doors:
+		var pos = door.global_position
+		door_distance_offsets[door.name] = pos - room_pos
+		
 func remove_some_rooms(percentage: int):
 	var initial_size = placed_rooms.size()
 	while placed_rooms.size() > initial_size - ceil(initial_size * (percentage / 100.0)): # Remove designated percentage of rooms
@@ -152,7 +139,7 @@ func remove_some_rooms(percentage: int):
 		room.queue_free()
 		placed_rooms.remove_at(random_index) # pop
 		
-		# UNCOMMENT THIS TO SEE THE DUNGEON SHRINK
+		# SEE THE DUNGEON SHRINK
 		if delay:
 			await wait_for(DELAY)
 		
@@ -230,3 +217,148 @@ func place_borders():
 				# SEE THE DUNGEON ADD BORDERS
 				if delay:
 					await wait_for(DELAY)
+					
+					
+# SPAWNING (player, enemies, stairs) --------------------------------------------------------------------------------------------------------------
+func salt(min: int, max: int) -> Vector2:
+	return Vector2(randi_range(min, max), randi_range(min, max))
+	
+func tile_increment() -> Vector2:
+	# Generate a random increment of 16 between 0 and 144
+	# (0 to 9) * 16 gives increments from 0 to 144
+	var x = randi() % 10 * 16
+	var y = randi() % 10 * 16
+	return Vector2(x,y)
+	
+func get_random_room_location() -> Vector2:
+	return used_positions.keys()[randi_range(0, used_positions.size() - 1)]
+	
+#func get_spawn_location() -> Vector2: # Pick a spawn spot for characters
+	#return get_random_room_location() + salt(5,160)
+	
+#func get_random_tile_location() -> Vector2:
+	#return get_random_room_location() + tile_increment()
+	
+func is_spawnable_tile(spawn_location: Vector2) -> bool:
+	# Actual -> Calc
+	# (0,3) -> (2,3)
+	# (6-8,2) -> (4,3)
+	# (6-8,2) -> (4,2)
+	# (2,1) -> (2,2)
+	# (6-8,2) -> (2,2)
+	# (3,1) -> (3,3)
+	# (3,1) -> (4,3)
+	# (2,1) -> (1,1)
+	# (3,1) -> (2,1)
+	var tile_map_layer = get_node("DungeonBase")
+	var local_position = tile_map_layer.to_local(spawn_location)
+	
+	var cell = tile_map_layer.local_to_map(local_position)
+	print("CELL")
+	print(cell)
+	
+	var data = tile_map_layer.get_cell_tile_data(cell)
+	print("DATA")
+	print(data)
+	
+	if data:
+		print("checking spawnable")
+		print(!data.get_custom_data("not_spawnable"))
+		print("\n")
+		return !data.get_custom_data("not_spawnable") # I did not_spawnable instead of spawnable so we have to manually mark less tiles in the TileSet
+	else:
+		# We shouldn't hit this ever with valid global coords
+		print("ERROR - Shouldn't be hitting this point. No TileData.")
+		return true # avoids maximum recursion depth error
+		
+func is_spawnable_room(room_location: Vector2) -> bool:
+	print("ROOM")
+	print(used_positions[room_location])
+	print("IS IN GROUP?")
+	print(used_positions[room_location].is_in_group("spawnable_room"))
+	return used_positions.has(room_location) and used_positions[room_location].is_in_group("spawnable_room")
+	
+func is_vector_in_range(vector: Vector2, min: int, max: int) -> bool:
+	return vector.x >= min and vector.x <= max and vector.y >= min and vector.y <= max
+
+func get_valid_spawn_location(season: bool = false) -> Vector2:
+	var room_location = get_random_room_location() # -> Vector 2
+	print("GLOBAL SPAWN LOC:")
+	print(room_location)
+	if is_spawnable_room(room_location):
+		print("It's spawnable")
+		var salt = Vector2.ZERO
+		var tile_increment = tile_increment()
+		print("INCREMENT:")
+		print(tile_increment)
+		var tile_in_room = room_location + tile_increment
+		print("TILE IN ROOM")
+		print(tile_in_room)
+		
+		print("IN RANGE?")
+		print(is_vector_in_range(tile_in_room, room_location.x + 15, room_location.y + 140))
+		print("SEASON?")
+		print(season)
+		# add some margin so player/enemies hitboxes don't spawn barely in the wall of an adjacent room
+		if is_vector_in_range(tile_in_room, room_location.x + 15, room_location.y + 140) and season:
+			print("SALTING")
+			salt = salt(0,16)
+			print(salt)
+			
+		print("TOTAL SPAWN SPOT:")
+		print(room_location + tile_increment() + salt)
+		return room_location + tile_increment() + salt
+	else:
+		print("recurse")
+		return get_valid_spawn_location()
+		
+func place_staircase():
+	var tile_coord = get_valid_spawn_location()
+	var stairs = staircase.instantiate()
+	stairs.global_position = tile_coord
+	add_child(stairs)
+	
+func place_player(player_instance: CharacterBody2D = null):
+	print("\nPlayer stuff")
+	var spawn_location = get_valid_spawn_location(true)
+	if player_instance: # Player is moving on to the next floor
+		player_instance.position = spawn_location
+		add_child(player_instance)
+	else: # Player is starting a new attempt
+		player_instance = player.instantiate()
+		player_instance.position = spawn_location
+		add_child(player_instance)
+		global_script.player_instance = player_instance
+	
+func place_enemies(count: int):
+	for i in range(count):
+		print("\nEnemy spawn")
+		var slime_instance = enemy.instantiate()
+		slime_instance.position = get_valid_spawn_location(true)
+		add_child(slime_instance)
+		
+		var enemyglobin_instance = enemyglobin.instantiate()
+		enemyglobin_instance.position = get_valid_spawn_location(true)
+		add_child(enemyglobin_instance)
+
+# UI --------------------------------------------------------------------------------------------------------------
+func find_stat_labels():
+	stat_display = get_node("CanvasLayer/StatDisplay") 
+	floors_label = stat_display.get_node("FloorsCleared") 
+	time_survived_label = stat_display.get_node("TimeSurvived") 
+	kills_label = stat_display.get_node("Kills") 
+	coins_label = stat_display.get_node("Coins") 
+	xp_label = stat_display.get_node("XP")
+				
+func update_stats():
+	floors_label.text = "Floors " + str(global_script.floors)
+	time_survived_label.text = "Time: " + str(ceil(global_script.time_survived))
+	kills_label.text = "Kills: " + str(global_script.kills)
+	coins_label.text = "Coins: " + str(global_script.player_coins)
+	xp_label.text = "XP: " + str(global_script.player_xp)
+	
+func find_debug_labels():
+	mouse_pos_label = stat_display.get_node("MousePos")
+	
+func update_mouse_pos():
+	mouse_pos_label.text = "Coords: " + str(get_global_mouse_position())
