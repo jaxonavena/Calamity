@@ -35,6 +35,7 @@ version_control/autoload_on_startup=true
 [global_group]
 
 spawnable_room=""
+rotateable_room=""
 
 [input]
 

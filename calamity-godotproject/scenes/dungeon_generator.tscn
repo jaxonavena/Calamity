@@ -48,6 +48,7 @@ var mouse_pos_label
 
 # SPECIAL --------------------------------------------------------------------------------------------------------------
 func _ready():
+	randomize() # built in seeder for random lib
 	generate_dungeon()
 	print(\"PLAYER\")
 	place_player(global_script.player_instance)
@@ -90,6 +91,7 @@ func generate_dungeon():
 func init_dungeon() -> Node2D:
 	# Initialize the starting room
 	var start_room = instance_room()
+	rotate_randomly(start_room)
 	start_room.global_position = Vector2(1000,800)
 	add_child(start_room)
 	placed_rooms.append(start_room)
@@ -116,6 +118,7 @@ func place_connected_rooms(current_room: Node2D, remaining_rooms: int):
 		current_doors.remove_at(random_index) # pop
 		
 		var new_room = instance_room()
+		rotate_randomly(new_room)
 		var new_room_pos = current_room.global_position
 		
 		new_room.global_position = determine_new_room_pos(door, new_room_pos)
@@ -147,6 +150,11 @@ func calculate_door_distance_offsets(current_room: Node2D):
 	for door in current_doors:
 		var pos = door.global_position
 		door_distance_offsets[door.name] = pos - room_pos
+		
+		
+func rotate_randomly(room: Node2D):
+	# random value from the set [0, 90, 180, 270]
+	room.rotation_degrees = randi() % 4 * 90
 		
 func remove_some_rooms(percentage: int):
 	var initial_size = placed_rooms.size()
