@@ -422,12 +422,12 @@ radius = 15.0
 
 [node name="Player" type="CharacterBody2D"]
 y_sort_enabled = true
-position = Vector2(15, 11)
+position = Vector2(0, -1)
 collision_layer = 3
 script = ExtResource("1_d64db")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(-16, -22)
+position = Vector2(0.25008, -12.5237)
 scale = Vector2(1.26042, 1.22818)
 sprite_frames = SubResource("SpriteFrames_ihe4e")
 animation = &"front_attack"
@@ -435,11 +435,11 @@ frame_progress = 0.875647
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 light_mask = 0
-position = Vector2(-16, -6)
+position = Vector2(0.25008, 3.47632)
 shape = SubResource("CapsuleShape2D_qjrnm")
 
 [node name="player_hitbox" type="Area2D" parent="."]
-position = Vector2(-16, -9)
+position = Vector2(0.25008, 0.476322)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="player_hitbox"]
 shape = SubResource("CircleShape2D_icepc")
@@ -451,7 +451,7 @@ wait_time = 0.5
 wait_time = 0.5
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(-16, -9)
+position = Vector2(0.25008, 0.476322)
 zoom = Vector2(3.5, 3.5)
 limit_smoothed = true
 rotation_smoothing_enabled = true

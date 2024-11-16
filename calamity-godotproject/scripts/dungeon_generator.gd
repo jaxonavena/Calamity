@@ -281,7 +281,14 @@ func is_spawnable_room(room_location: Vector2) -> bool:
 func is_vector_in_range(vector: Vector2, min: int, max: int) -> bool:
 	return vector.x >= min and vector.x <= max and vector.y >= min and vector.y <= max
 
+var recursion_depth = 0
 func get_valid_spawn_location(season: bool = false) -> Vector2:
+	if recursion_depth > 100: 
+		push_error("Recursion limit exceeded in get_valid_spawn_location")
+		return Vector2.ZERO
+	recursion_depth += 1
+	print("Recursion depth:", recursion_depth)
+	
 	var room_location = get_random_room_location() # -> Vector 2
 	print("GLOBAL SPAWN LOC:")
 	print(room_location)

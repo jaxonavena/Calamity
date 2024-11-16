@@ -57,17 +57,12 @@ func _on_detection_area_body_entered(body):
 	if body.has_method("player"):
 		player = body
 		player_chase = true
-
-
-
-	
 	#print("player chase")
 	
 func _on_detection_area_body_exited(body):
 	if body.has_method("player"):
 		player = null
 		player_chase = false
-	
 	#print("stop player chase")
 	
 func enemy():

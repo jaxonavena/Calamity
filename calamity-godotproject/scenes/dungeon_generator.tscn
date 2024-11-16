@@ -254,11 +254,11 @@ func tile_increment() -> Vector2:
 func get_random_room_location() -> Vector2:
 	return used_positions.keys()[randi_range(0, used_positions.size() - 1)]
 	
-func get_spawn_location() -> Vector2: # Pick a spawn spot for characters
-	return get_random_room_location() + salt(5,160)
+#func get_spawn_location() -> Vector2: # Pick a spawn spot for characters
+	#return get_random_room_location() + salt(5,160)
 	
-func get_random_tile_location() -> Vector2:
-	return get_random_room_location() + tile_increment()
+#func get_random_tile_location() -> Vector2:
+	#return get_random_room_location() + tile_increment()
 	
 func is_spawnable_tile(spawn_location: Vector2) -> bool:
 	# Actual -> Calc
@@ -293,20 +293,24 @@ func is_spawnable_tile(spawn_location: Vector2) -> bool:
 		return true # avoids maximum recursion depth error
 		
 func is_spawnable_room(room_location: Vector2) -> bool:
-	print(\"ROOM\")
-	print(used_positions[room_location])
 	print(\"IS IN GROUP?\")
 	print(used_positions[room_location].is_in_group(\"spawnable_room\"))
 	return used_positions.has(room_location) and used_positions[room_location].is_in_group(\"spawnable_room\")
 	
-func is_vector_in_range(vector: Vector2, min_coords: Vector2, max_coords: Vector2) -> bool:
-	return vector.x >= min_coords.x and vector.x <= max_coords.x and vector.y >= min_coords.y and vector.y <= max_coords.y
+func is_vector_in_range(vector: Vector2, min: int, max: int) -> bool:
+	return vector.x >= min and vector.x <= max and vector.y >= min and vector.y <= max
 
+var recursion_depth = 0
 func get_valid_spawn_location(season: bool = false) -> Vector2:
+	if recursion_depth > 100: 
+		push_error(\"Recursion limit exceeded in get_valid_spawn_location\")
+		return Vector2.ZERO
+	recursion_depth += 1
+	print(\"\\nRecursion depth:\", recursion_depth)
+	
 	var room_location = get_random_room_location() # -> Vector 2
 	print(\"GLOBAL SPAWN LOC:\")
 	print(room_location)
-	#if is_spawnable_tile(room_location):
 	if is_spawnable_room(room_location):
 		print(\"It's spawnable\")
 		var salt = Vector2.ZERO
@@ -317,21 +321,23 @@ func get_valid_spawn_location(season: bool = false) -> Vector2:
 		print(\"TILE IN ROOM\")
 		print(tile_in_room)
 		
+		print(\"IN RANGE?\")
+		print(is_vector_in_range(tile_in_room, room_location.x + 15, room_location.y + 140))
+		print(\"SEASON?\")
+		print(season)
 		# add some margin so player/enemies hitboxes don't spawn barely in the wall of an adjacent room
-		if is_vector_in_range(tile_in_room, Vector2(room_location.x + 20, room_location.y + 140), \\
-			Vector2(room_location.x + 20, room_location.y + 140)) \\
-				and season:
-					
+		if is_vector_in_range(tile_in_room, room_location.x + 15, room_location.y + 140) and season:
 			print(\"SALTING\")
 			salt = salt(0,16)
 			print(salt)
 			
 		print(\"TOTAL SPAWN SPOT:\")
-		print(room_location + tile_increment() + salt)
-		return room_location + tile_increment() + salt
+		print(room_location + tile_increment + salt)
+		recursion_depth = 0
+		return room_location + tile_increment + salt
 	else:
 		print(\"recurse\")
-		return get_valid_spawn_location()
+		return get_valid_spawn_location(season)
 		
 func place_staircase():
 	var tile_coord = get_valid_spawn_location()
@@ -340,6 +346,7 @@ func place_staircase():
 	add_child(stairs)
 	
 func place_player(player_instance: CharacterBody2D = null):
+	print(\"\\nPLAYER STUFF\")
 	var spawn_location = get_valid_spawn_location(true)
 	if player_instance: # Player is moving on to the next floor
 		player_instance.position = spawn_location
@@ -352,6 +359,7 @@ func place_player(player_instance: CharacterBody2D = null):
 	
 func place_enemies(count: int):
 	for i in range(count):
+		print(\"\\nEnemy spawn\")
 		var slime_instance = enemy.instantiate()
 		slime_instance.position = get_valid_spawn_location(true)
 		add_child(slime_instance)
@@ -381,8 +389,6 @@ func find_debug_labels():
 	
 func update_mouse_pos():
 	mouse_pos_label.text = \"Coords: \" + str(get_global_mouse_position())
-	
-	
 "
 
 [node name="DungeonGenerator" type="Node2D"]
