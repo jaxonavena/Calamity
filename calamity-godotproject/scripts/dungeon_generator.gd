@@ -281,42 +281,26 @@ func is_spawnable_room(room_location: Vector2) -> bool:
 func is_vector_in_range(vector: Vector2, min: int, max: int) -> bool:
 	return vector.x >= min and vector.x <= max and vector.y >= min and vector.y <= max
 
-var recursion_depth = 0
+#var recursion_depth = 0
 func get_valid_spawn_location(season: bool = false) -> Vector2:
-	if recursion_depth > 100: 
-		push_error("Recursion limit exceeded in get_valid_spawn_location")
-		return Vector2.ZERO
-	recursion_depth += 1
-	print("Recursion depth:", recursion_depth)
+	#if recursion_depth > 100: 
+		#push_error("Recursion limit exceeded in get_valid_spawn_location")
+		#return Vector2.ZERO
+	#recursion_depth += 1
+	#print("Recursion depth:", recursion_depth)
 	
 	var room_location = get_random_room_location() # -> Vector 2
-	print("GLOBAL SPAWN LOC:")
-	print(room_location)
 	if is_spawnable_room(room_location):
-		print("It's spawnable")
 		var salt = Vector2.ZERO
 		var tile_increment = tile_increment()
-		print("INCREMENT:")
-		print(tile_increment)
 		var tile_in_room = room_location + tile_increment
-		print("TILE IN ROOM")
-		print(tile_in_room)
 		
-		print("IN RANGE?")
-		print(is_vector_in_range(tile_in_room, room_location.x + 15, room_location.y + 140))
-		print("SEASON?")
-		print(season)
 		# add some margin so player/enemies hitboxes don't spawn barely in the wall of an adjacent room
 		if is_vector_in_range(tile_in_room, room_location.x + 15, room_location.y + 140) and season:
-			print("SALTING")
 			salt = salt(0,16)
-			print(salt)
 			
-		print("TOTAL SPAWN SPOT:")
-		print(room_location + tile_increment() + salt)
 		return room_location + tile_increment() + salt
 	else:
-		print("recurse")
 		return get_valid_spawn_location()
 		
 func place_staircase():
@@ -326,7 +310,6 @@ func place_staircase():
 	add_child(stairs)
 	
 func place_player(player_instance: CharacterBody2D = null):
-	print("\nPlayer stuff")
 	var spawn_location = get_valid_spawn_location(true)
 	if player_instance: # Player is moving on to the next floor
 		player_instance.position = spawn_location
@@ -339,7 +322,6 @@ func place_player(player_instance: CharacterBody2D = null):
 	
 func place_enemies(count: int):
 	for i in range(count):
-		print("\nEnemy spawn")
 		var slime_instance = enemy.instantiate()
 		slime_instance.position = get_valid_spawn_location(true)
 		add_child(slime_instance)
