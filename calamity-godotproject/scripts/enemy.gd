@@ -58,7 +58,7 @@ func _on_enemy_hitbox_body_exited(body):
 func deal_with_damage(shot = false):
 	if (player_in_attack_zone and global_script.player_current_attack == true) or shot:
 		health = health - 10
-		print("slime health - 10")
+		#print("slime health - 10")
 		if health <= 0:
 			die()
 		

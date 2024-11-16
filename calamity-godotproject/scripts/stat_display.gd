@@ -12,7 +12,7 @@ func _ready():
 	update_display()
 
 func update_display():
-	floors_cleared.text = "Floors: " + str(global_script.floors_cleared)
+	floors_cleared.text = "Floors: " + str(global_script.floors)
 	time_survived.text = "Time: " + str(global_script.time_survived)
 	kills.text = "Kills: " +str(global_script.kills)
 	coins.text = "Coins: " + str(global_script.player_coins)

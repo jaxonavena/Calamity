@@ -6,7 +6,7 @@ var player_can_use_stairs = false
 # PLAYER STATS
 var player_coins = 0
 var player_xp = 0
-var floors_cleared = 0
+var floors = 1
 var time_survived = 0.0
 var kills = 0
 
@@ -21,34 +21,29 @@ func _process(delta) -> void:
 
 func check_for_new_high_scores():
 	if player_xp > best_xp:
-		print("NEW BEST XP;;;;;;")
-		print(best_xp)
-		
+		#print("NEW BEST XP;;;;;;")
+		#print(best_xp)
 		best_xp = player_xp
 		
-	if floors_cleared > best_floors:
-		print("NEW BEST FLOORS;;;;;;")
-		print(best_floors)
-		
-		best_floors = floors_cleared
+	if floors > best_floors:
+		#print("NEW BEST FLOORS;;;;;;")
+		#print(best_floors)
+		best_floors = floors
 		
 	if time_survived > best_time:
 		#print("NEW BEST TIME;;;;;;")
 		#print(best_time)
-		
 		best_time = time_survived
 		
-		
 	if kills > best_kills:
-		print("NEW BEST KILLS;;;;;;")
-		print(best_kills)
-		
+		#print("NEW BEST KILLS;;;;;;")
+		#print(best_kills)
 		best_kills = kills
 	
 	
 func reset_player_stats():
 	player_xp = 0
-	floors_cleared = 0
+	floors = 1
 	time_survived = 0
 	kills = 0
 
@@ -57,6 +52,6 @@ var player_instance = null
 var previous_floor = null
 
 func new_floor():
-	floors_cleared += 1
+	floors += 1
 	previous_floor.remove_child(player_instance)
 	get_tree().change_scene_to_file("res://scenes/dungeon_generator.tscn")

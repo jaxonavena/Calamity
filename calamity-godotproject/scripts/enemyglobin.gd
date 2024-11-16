@@ -57,17 +57,12 @@ func _on_detection_area_body_entered(body):
 	if body.has_method("player"):
 		player = body
 		player_chase = true
-
-
-
-	
 	#print("player chase")
 	
 func _on_detection_area_body_exited(body):
 	if body.has_method("player"):
 		player = null
 		player_chase = false
-	
 	#print("stop player chase")
 	
 func enemy():
@@ -87,7 +82,6 @@ func _on_enemy_hitbox_body_exited(body):
 func deal_with_damage(shot = false):
 	if (player_in_attack_zone and global_script.player_current_attack == true) or shot:
 		health = health - 10
-		print("globin health - 10")
 		if health <= 0:
 			die()
 		
@@ -104,8 +98,6 @@ func drop_items():
 func update_player_xp():
 	var xp = randi_range(3, 20)
 	global_script.player_xp = global_script.player_xp + xp
-	print("XP:")
-	print(global_script.player_xp)
 
 
 func _on_projectile_timer_timeout() -> void:
