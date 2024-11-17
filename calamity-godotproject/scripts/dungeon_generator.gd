@@ -8,11 +8,13 @@ var enemy = preload("res://scenes/enemy.tscn")
 var enemyglobin = preload("res://scenes/enemyglobin.tscn")
 var used_positions = {}
 var door_distance_offsets = {}
-const NUM_ROOMS = 5 #5
-const ROOM_REMOVAL_PERCENTAGE = 15 #15
+var player_spawn_room_location: Vector2
+var NUM_ROOMS = min(global_script.floors + 1, 5) # 5 is ideal with 15 removal
+#var NUM_ROOMS = 5 # 5 is ideal with 15 removal
+const ROOM_REMOVAL_PERCENTAGE = 15 #15 is ideal with 5 size
 var placed_rooms = []
 var delay = false # Delay the generation of the dungeon to watch it happen live, currently breaks everything if true
-const DELAY = 1.0
+const DELAY = 0.2
 
 # StatDisplay
 var stat_display: Control
@@ -28,10 +30,9 @@ var mouse_pos_label
 # SPECIAL --------------------------------------------------------------------------------------------------------------
 func _ready():
 	generate_dungeon()
-	print("PLAYER")
 	place_player(global_script.player_instance)
-	print("ENEMIES...")
-	place_enemies(10)
+	place_staircase()
+	place_enemies(global_script.floors)
 	
 	# UI
 	find_stat_labels()
@@ -54,6 +55,9 @@ func restart_scene():
 	global_script.reset_player_stats()
 	get_tree().reload_current_scene()
 	
+func wait_for(time: float):
+	await get_tree().create_timer(time).timeout 
+	
 # DUNGEON (build overall map) --------------------------------------------------------------------------------------------------------------
 func generate_dungeon():
 	var start_room = init_dungeon()
@@ -61,8 +65,6 @@ func generate_dungeon():
 	place_connected_rooms(start_room, NUM_ROOMS) #recursive
 	remove_some_rooms(ROOM_REMOVAL_PERCENTAGE) # input the percentage of rooms you want to remove
 	place_borders() # walls off the dungeon
-	print("STAIRS")
-	place_staircase()
 	
 	global_script.previous_floor = get_tree().current_scene
 
@@ -109,8 +111,8 @@ func place_connected_rooms(current_room: Node2D, remaining_rooms: int):
 		
 		# SEE THE DUNGEON GROW
 		# This breaks everything for some reason
-		if delay:
-			await wait_for(DELAY)
+		#if delay:
+			#await wait_for(DELAY)
 			
 		# THis also might break everything, but might be ok
 		var break_early = randi_range(1, 100)
@@ -194,9 +196,6 @@ func is_adjacent(pos1: Vector2, pos2: Vector2) -> bool:
 	# check if the two positions are adjacent up, down, left, or right
 	var diff = pos1 - pos2
 	return (abs(diff.x) == 160 and diff.y == 0) or (abs(diff.y) == 160 and diff.x == 0)
-
-func wait_for(time: float):
-	await get_tree().create_timer(time).timeout 
 	
 func place_borders():
 	for current_position in used_positions.keys():  # Iterate over the keys in used_positions
@@ -271,26 +270,20 @@ func is_spawnable_tile(spawn_location: Vector2) -> bool:
 		print("ERROR - Shouldn't be hitting this point. No TileData.")
 		return true # avoids maximum recursion depth error
 		
-func is_spawnable_room(room_location: Vector2) -> bool:
-	print("ROOM")
-	print(used_positions[room_location])
-	print("IS IN GROUP?")
-	print(used_positions[room_location].is_in_group("spawnable_room"))
+func is_spawnable_room(room_location: Vector2, is_player = false) -> bool:
+	if !is_player and room_location == player_spawn_room_location: # Nothing can spawn in the player's spawn room
+		return false
 	return used_positions.has(room_location) and used_positions[room_location].is_in_group("spawnable_room")
 	
 func is_vector_in_range(vector: Vector2, min: int, max: int) -> bool:
 	return vector.x >= min and vector.x <= max and vector.y >= min and vector.y <= max
 
-#var recursion_depth = 0
-func get_valid_spawn_location(season: bool = false) -> Vector2:
-	#if recursion_depth > 100: 
-		#push_error("Recursion limit exceeded in get_valid_spawn_location")
-		#return Vector2.ZERO
-	#recursion_depth += 1
-	#print("Recursion depth:", recursion_depth)
-	
+func get_valid_spawn_location(season: bool = false, is_player: bool = false) -> Vector2:
 	var room_location = get_random_room_location() # -> Vector 2
-	if is_spawnable_room(room_location):
+	if is_spawnable_room(room_location, is_player):
+		if is_player:
+			player_spawn_room_location = room_location
+			print(player_spawn_room_location)
 		var salt = Vector2.ZERO
 		var tile_increment = tile_increment()
 		var tile_in_room = room_location + tile_increment
@@ -301,16 +294,26 @@ func get_valid_spawn_location(season: bool = false) -> Vector2:
 			
 		return room_location + tile_increment() + salt
 	else:
-		return get_valid_spawn_location()
+		return get_valid_spawn_location(season, is_player)
 		
+func rearrange_sibling_nodes(node1, node2):
+	var parent = node1.get_parent()
+	parent.move_child(node2, node1.get_index())  # Move Node2 before Node1
+
 func place_staircase():
 	var tile_coord = get_valid_spawn_location()
 	var stairs = staircase.instantiate()
 	stairs.global_position = tile_coord
 	add_child(stairs)
 	
+	# We need to know where the player's spawn room is to make sure enemies/stairs 
+	# don't spawn in the same room. This requires us to spawn the stairs after the player, but if
+	# we do that, then the player will be able to walk "under" the stairs sprite. So we rearrange the
+	# order of the nodes in the tree, after the fact, so that everything works
+	rearrange_sibling_nodes($Player, $Staircase)
+	
 func place_player(player_instance: CharacterBody2D = null):
-	var spawn_location = get_valid_spawn_location(true)
+	var spawn_location = get_valid_spawn_location(true, true)
 	if player_instance: # Player is moving on to the next floor
 		player_instance.position = spawn_location
 		add_child(player_instance)
@@ -320,7 +323,14 @@ func place_player(player_instance: CharacterBody2D = null):
 		add_child(player_instance)
 		global_script.player_instance = player_instance
 	
-func place_enemies(count: int):
+func place_enemies(floors: int):
+	# min: 75% of (2 * input), max: (2 * input)
+	# Floor 1: min: 1.5 -> 1, max: 2, count: 
+	# Floor 2: min: 3, max: 4
+	var min = int(0.75 * 2 * floors)
+	var max = int(4 * floors)
+	var count = randi() % (max - min + 1) + min
+	
 	for i in range(count):
 		var slime_instance = enemy.instantiate()
 		slime_instance.position = get_valid_spawn_location(true)

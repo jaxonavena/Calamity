@@ -2,7 +2,8 @@ extends Node
 # PLAYER FLAGS
 var player_current_attack = false
 var player_can_use_stairs = false
-
+var player_is_invincible = false
+	
 # PLAYER STATS
 var player_coins = 0
 var player_xp = 0
