@@ -5,7 +5,7 @@ const speed = 120
 var current_dir = "down"
 var enemy_in_attack_range = false
 var enemy_attack_cooldown = true
-var health = 100
+var health = 250
 var player_alive = true
 var attack_in_progess = false
 var projectile_hit = false
@@ -150,7 +150,8 @@ func _on_player_hitbox_body_exited(body):
 
 func enemy_attack(shot = false):
 	if (enemy_in_attack_range and enemy_attack_cooldown == true) or shot:
-		health = health - 5;
+		if !global_script.player_is_invincible:
+			health = health - 5;
 		enemy_attack_cooldown = false
 		$enemy_attackcooldown.start()
 		#print("player taken damage\n")

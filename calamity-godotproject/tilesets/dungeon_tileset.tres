@@ -171,6 +171,7 @@ texture = ExtResource("1_wybo5")
 5:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 5:3/0/custom_data_0 = true
 6:3/0 = 0
+6:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, -2.53125, -8, -8, -1.125)
 6:3/0/custom_data_0 = true
 8:3/0 = 0
 8:3/0/custom_data_0 = true
