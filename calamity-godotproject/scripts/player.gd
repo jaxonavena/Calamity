@@ -9,6 +9,7 @@ var health = 250
 var player_alive = true
 var attack_in_progess = false
 var projectile_hit = false
+@onready var audio_stream_player: AudioStreamPlayer = $AudioStreamPlayer
 
 # Ranged weapon stuff
 @export var fire_rate: float = 0.5  # Time between shots
@@ -20,6 +21,7 @@ func _process(delta):
 	# Shoot projectile when the player presses the shoot button
 	if Input.is_action_pressed("shoot") and can_shoot:
 		shoot_projectile()
+		audio_stream_player.play()
 		can_shoot = false
 	
 		# Wait for the next shot

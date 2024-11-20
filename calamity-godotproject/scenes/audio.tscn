@@ -1,7 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://cx403i58w3og5"]
-
-[ext_resource type="AudioStream" uid="uid://b4idm6ah4fc8s" path="res://Darude - Sandstorm.mp3" id="1_nqlry"]
+[gd_scene format=3 uid="uid://cx403i58w3og5"]
 
 [node name="Audio" type="AudioStreamPlayer2D"]
-stream = ExtResource("1_nqlry")
 autoplay = true

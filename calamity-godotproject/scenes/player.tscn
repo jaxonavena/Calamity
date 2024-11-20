@@ -1,7 +1,8 @@
-[gd_scene load_steps=57 format=3 uid="uid://blffjs0lwjxe0"]
+[gd_scene load_steps=58 format=3 uid="uid://blffjs0lwjxe0"]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_d64db"]
 [ext_resource type="Texture2D" uid="uid://266tydyydbie" path="res://art/characters/player.png" id="2_y4q85"]
+[ext_resource type="AudioStream" uid="uid://cbliggoiv56l1" path="res://audio/221432__jalastram__shoot002.mp3" id="3_a7bpr"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_vm5is"]
 atlas = ExtResource("2_y4q85")
@@ -457,6 +458,10 @@ limit_smoothed = true
 rotation_smoothing_enabled = true
 drag_horizontal_enabled = true
 drag_vertical_enabled = true
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_a7bpr")
+max_polyphony = 20
 
 [connection signal="body_entered" from="player_hitbox" to="." method="_on_player_hitbox_body_entered"]
 [connection signal="body_exited" from="player_hitbox" to="." method="_on_player_hitbox_body_exited"]
