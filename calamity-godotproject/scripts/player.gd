@@ -15,6 +15,10 @@ var projectile_hit = false
 var projectile = preload("res://scenes/projectile.tscn")
 var next_floor = preload("res://scenes/dungeon_generator.tscn")
 var can_shoot = true  # Whether the player can shoot
+var weapons = [preload("res://scenes/projectile.tscn") , preload("res://scenes/projectile_piercing.tscn"), preload("res://scenes/projectile_fast.tscn"), preload("res://scenes/projectile_explosive.tscn")]
+var current_weapon_index = 0
+var projectile1 = weapons[current_weapon_index] #default weapon
+ 
 
 func _process(delta):
 	# Shoot projectile when the player presses the shoot button
@@ -30,7 +34,7 @@ func _process(delta):
 		
 # Function to shoot a projectile
 func shoot_projectile():
-	var projectile_inst = projectile.instantiate()
+	var projectile_inst = projectile1.instantiate()
 	
 	# In the player's shoot function
 	var mouse_position = get_global_mouse_position()
@@ -194,3 +198,12 @@ func _on_attack_timer_timeout():
 
 func _on_projectile_timer_timeout():
 	can_shoot = true
+	
+func _input(event):
+	if event.is_action_pressed("switch_weapon"):
+		print("Switch weapon triggered")
+		current_weapon_index = (current_weapon_index + 1) % weapons.size()
+		projectile1 = weapons[current_weapon_index]
+		print("Switched to weapon", current_weapon_index)
+		#$WeaponLabel.text = "Weapon: " + str(current_weapon_index) 
+		#$WeaponSwitchSound.play()

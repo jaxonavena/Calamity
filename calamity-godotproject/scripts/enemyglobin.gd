@@ -10,6 +10,8 @@ var projectile = preload("res://scenes/projectile.tscn")
 var coin_bag = preload("res://scenes/item_drop.tscn")
 var health = 30
 var player_in_attack_zone = false
+@onready var hit_effect = $HitEffect
+@onready var death_effect = $DeathEffect
 
 func _physics_process(delta):
 	deal_with_damage()
@@ -82,10 +84,15 @@ func _on_enemy_hitbox_body_exited(body):
 func deal_with_damage(shot = false):
 	if (player_in_attack_zone and global_script.player_current_attack == true) or shot:
 		health = health - 10
+		hit_effect.emitting = true
+		await get_tree().create_timer(0.5).timeout
+		hit_effect.emitting = false
 		if health <= 0:
 			die()
 		
 func die():
+	death_effect.emitting = true
+	await get_tree().create_timer(0.2).timeout
 	drop_items()
 	update_player_xp()
 	self.queue_free()
