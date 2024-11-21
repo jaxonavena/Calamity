@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://bmjsqsvb6225k"]
+[gd_scene load_steps=23 format=3 uid="uid://bmjsqsvb6225k"]
 
 [ext_resource type="Script" path="res://scripts/enemy.gd" id="1_os78v"]
 [ext_resource type="Texture2D" uid="uid://b6r6rij8p5bkb" path="res://art/characters/slime.png" id="2_72v0q"]
@@ -95,6 +95,40 @@ radius = 5.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_dugog"]
 radius = 25.0
 
+[sub_resource type="Gradient" id="Gradient_ypops"]
+offsets = PackedFloat32Array(0.610656, 0.995902)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_2u35w"]
+gradient = SubResource("Gradient_ypops")
+
+[sub_resource type="Curve" id="Curve_qeww3"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.000565171), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_w1eh5"]
+curve = SubResource("Curve_qeww3")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ou6ec"]
+lifetime_randomness = 0.5
+particle_flag_disable_z = true
+inherit_velocity_ratio = 500.0
+spread = 180.0
+gravity = Vector3(0, 0, 0)
+scale_min = 0.0
+scale_max = 10.0
+scale_curve = SubResource("CurveTexture_w1eh5")
+color_ramp = SubResource("GradientTexture1D_2u35w")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_e1fs2"]
+particle_flag_disable_z = true
+spread = 180.0
+initial_velocity_min = 206.99
+initial_velocity_max = 206.99
+gravity = Vector3(0, 0, 0)
+scale_min = 0.0
+scale_max = 10.0
+
 [node name="enemy" type="CharacterBody2D"]
 collision_layer = 3
 script = ExtResource("1_os78v")
@@ -120,6 +154,23 @@ shape = SubResource("CircleShape2D_o46yg")
 shape = SubResource("CircleShape2D_dugog")
 
 [node name="Marker2D" type="Marker2D" parent="."]
+
+[node name="HitEffect" type="GPUParticles2D" parent="."]
+self_modulate = Color(0.603638, 0.480599, 0.628358, 1)
+emitting = false
+amount = 10
+process_material = SubResource("ParticleProcessMaterial_ou6ec")
+explosiveness = 1.0
+fixed_fps = 0
+
+[node name="DeathEffect" type="GPUParticles2D" parent="."]
+modulate = Color(0.910129, 0.694491, 0.41191, 1)
+emitting = false
+amount = 10
+process_material = SubResource("ParticleProcessMaterial_e1fs2")
+lifetime = 0.8
+one_shot = true
+explosiveness = 1.0
 
 [connection signal="body_entered" from="detection_area" to="." method="_on_detection_area_body_entered"]
 [connection signal="body_exited" from="detection_area" to="." method="_on_detection_area_body_exited"]

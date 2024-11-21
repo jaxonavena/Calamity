@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://dfhcmbghw4cxu"]
+
+[ext_resource type="PackedScene" uid="uid://cy4xx1hlip17m" path="res://scenes/projectile.tscn" id="1_1oxq4"]
+
+[node name="Projectile" instance=ExtResource("1_1oxq4")]
+speed = 500.0
+damage = 5
+lifetime = 1.0
+effect_type = "fast"
