@@ -25,6 +25,7 @@ var time_survived_label
 var kills_label
 var coins_label
 var xp_label
+var health_label
 
 # DebugDisplay
 var mouse_pos_label
@@ -411,6 +412,7 @@ func find_stat_labels():
 	kills_label = stat_display.get_node("Kills") 
 	coins_label = stat_display.get_node("Coins") 
 	xp_label = stat_display.get_node("XP")
+	health_label = stat_display.get_node("Health")
 				
 func update_stats():
 	floors_label.text = "Floors " + str(global_script.floors)
@@ -418,6 +420,7 @@ func update_stats():
 	kills_label.text = "Kills: " + str(global_script.kills)
 	coins_label.text = "Coins: " + str(global_script.player_coins)
 	xp_label.text = "XP: " + str(global_script.player_xp)
+	health_label.text = "HP: "  + ("|".repeat($Player.health / 10))
 	
 func find_debug_labels():
 	mouse_pos_label = stat_display.get_node("MousePos")

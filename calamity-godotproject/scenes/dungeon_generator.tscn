@@ -33,8 +33,8 @@ tile_set = ExtResource("15_cgt0t")
 [node name="StatDisplay" type="Control" parent="CanvasLayer"]
 layout_mode = 3
 anchors_preset = 0
-offset_right = 1993.0
-offset_bottom = 1960.0
+offset_right = 2000.0
+offset_bottom = 2000.0
 script = ExtResource("16_qitlb")
 
 [node name="FloorsCleared" type="Label" parent="CanvasLayer/StatDisplay"]
@@ -89,7 +89,16 @@ text = "XP:"
 layout_mode = 0
 offset_left = 65.0
 offset_top = 178.0
-offset_right = 951.0
-offset_bottom = 460.0
+offset_right = 504.0
+offset_bottom = 224.0
 theme_override_font_sizes/font_size = 30
 text = "Coords:"
+
+[node name="Health" type="Label" parent="CanvasLayer/StatDisplay"]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 264.0
+offset_right = 192.0
+offset_bottom = 312.0
+theme_override_font_sizes/font_size = 30
+text = "Health:"
