@@ -3,6 +3,7 @@ extends Node
 var player_current_attack = false
 var player_can_use_stairs = false
 var player_is_invincible = false
+var restart_allowed = true
 	
 # PLAYER STATS
 var player_coins = 0
