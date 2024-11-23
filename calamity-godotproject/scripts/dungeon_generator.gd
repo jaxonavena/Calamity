@@ -9,6 +9,7 @@ var enemyglobin = preload("res://scenes/enemyglobin.tscn")
 var used_positions = {}
 var door_distance_offsets = {}
 var player_spawn_room_location: Vector2
+var attempted_stair_rooms = [] # Tracks what rooms have been attempted to place a staircase in to avoid repeats
 var NUM_ROOMS = min(global_script.floors + 1, 5) # 5 is ideal with 15 removal
 #var NUM_ROOMS = 5 # 5 is ideal with 15 removal
 const ROOM_REMOVAL_PERCENTAGE = 15 #15 is ideal with 5 size
@@ -216,8 +217,7 @@ func place_borders():
 				# SEE THE DUNGEON ADD BORDERS
 				if delay:
 					await wait_for(DELAY)
-					
-					
+	
 # SPAWNING (player, enemies, stairs) --------------------------------------------------------------------------------------------------------------
 func salt(min: int, max: int) -> Vector2:
 	return Vector2(randi_range(min, max), randi_range(min, max))
@@ -238,37 +238,27 @@ func get_random_room_location() -> Vector2:
 #func get_random_tile_location() -> Vector2:
 	#return get_random_room_location() + tile_increment()
 	
-func is_spawnable_tile(spawn_location: Vector2) -> bool:
-	# Actual -> Calc
-	# (0,3) -> (2,3)
-	# (6-8,2) -> (4,3)
-	# (6-8,2) -> (4,2)
-	# (2,1) -> (2,2)
-	# (6-8,2) -> (2,2)
-	# (3,1) -> (3,3)
-	# (3,1) -> (4,3)
-	# (2,1) -> (1,1)
-	# (3,1) -> (2,1)
-	var tile_map_layer = get_node("DungeonBase")
-	var local_position = tile_map_layer.to_local(spawn_location)
-	
-	var cell = tile_map_layer.local_to_map(local_position)
-	print("CELL")
-	print(cell)
-	
-	var data = tile_map_layer.get_cell_tile_data(cell)
-	print("DATA")
-	print(data)
-	
-	if data:
-		print("checking spawnable")
-		print(!data.get_custom_data("not_spawnable"))
-		print("\n")
-		return !data.get_custom_data("not_spawnable") # I did not_spawnable instead of spawnable so we have to manually mark less tiles in the TileSet
-	else:
-		# We shouldn't hit this ever with valid global coords
-		print("ERROR - Shouldn't be hitting this point. No TileData.")
-		return true # avoids maximum recursion depth error
+#func is_spawnable_tile(spawn_location: Vector2) -> bool:
+	#var tile_map_layer = get_node("DungeonBase")
+	#var local_position = tile_map_layer.to_local(spawn_location)
+	#
+	#var cell = tile_map_layer.local_to_map(local_position)
+	#print("CELL")
+	#print(cell)
+	#
+	#var data = tile_map_layer.get_cell_tile_data(cell)
+	#print("DATA")
+	#print(data)
+	#
+	#if data:
+		#print("checking spawnable")
+		#print(!data.get_custom_data("not_spawnable"))
+		#print("\n")
+		#return !data.get_custom_data("not_spawnable") # I did not_spawnable instead of spawnable so we have to manually mark less tiles in the TileSet
+	#else:
+		## We shouldn't hit this ever with valid global coords
+		#print("ERROR - Shouldn't be hitting this point. No TileData.")
+		#return true # avoids maximum recursion depth error
 		
 func is_spawnable_room(room_location: Vector2, is_player = false) -> bool:
 	if !is_player and room_location == player_spawn_room_location: # Nothing can spawn in the player's spawn room
@@ -278,12 +268,21 @@ func is_spawnable_room(room_location: Vector2, is_player = false) -> bool:
 func is_vector_in_range(vector: Vector2, min: int, max: int) -> bool:
 	return vector.x >= min and vector.x <= max and vector.y >= min and vector.y <= max
 
-func get_valid_spawn_location(season: bool = false, is_player: bool = false) -> Vector2:
-	var room_location = get_random_room_location() # -> Vector 2
+func get_valid_spawn_location(season: bool = false, is_player: bool = false, is_stairs: bool = false) -> Vector2:
+	var room_location: Vector2
+	if is_stairs:
+		print("IS STAIRS")
+		room_location = get_furthest_room(player_spawn_room_location) # -> Vector 2
+		print("ROOM LOCATION:")
+		print(room_location)
+	else:
+		room_location = get_random_room_location()
+		
 	if is_spawnable_room(room_location, is_player):
+		print("SPAWNABLE")
 		if is_player:
 			player_spawn_room_location = room_location
-			print(player_spawn_room_location)
+			
 		var salt = Vector2.ZERO
 		var tile_increment = tile_increment()
 		var tile_in_room = room_location + tile_increment
@@ -292,16 +291,37 @@ func get_valid_spawn_location(season: bool = false, is_player: bool = false) -> 
 		if is_vector_in_range(tile_in_room, room_location.x + 15, room_location.y + 140) and season:
 			salt = salt(0,16)
 			
-		return room_location + tile_increment() + salt
+		return room_location + tile_increment + salt
 	else:
-		return get_valid_spawn_location(season, is_player)
+		print("RECURSE\n")
+		return get_valid_spawn_location(season, is_player, is_stairs)
 		
 func rearrange_sibling_nodes(node1, node2):
 	var parent = node1.get_parent()
-	parent.move_child(node2, node1.get_index())  # Move Node2 before Node1
+	parent.move_child(node2, node1.get_index())  # Move Node2 before Node1 in scene tree
+	
+func get_furthest_room(room_position: Vector2) -> Vector2:
+	var furthest_room: Vector2
+	var greatest_distance: float = -INF  # start with smallest possible value
+
+	for key in used_positions.keys():
+		print(key)
+		if key in attempted_stair_rooms:
+			print(key)
+			print("ALREADY TRIED IT")
+			continue
+		var distance = room_position.distance_to(key)
+		
+		if distance > greatest_distance:
+			greatest_distance = distance
+			furthest_room = key
+	print("adding")
+	print("FURTHEST ROOM", furthest_room)
+	attempted_stair_rooms.append(furthest_room)
+	return furthest_room
 
 func place_staircase():
-	var tile_coord = get_valid_spawn_location()
+	var tile_coord = get_valid_spawn_location(false, false, true)
 	var stairs = staircase.instantiate()
 	stairs.global_position = tile_coord
 	add_child(stairs)
