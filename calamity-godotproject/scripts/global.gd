@@ -52,6 +52,7 @@ func reset_player_stats():
 # PLAYER PERSISTENCE
 var player_instance = null
 var previous_floor = null
+var restarting = false
 
 func new_floor():
 	floors += 1

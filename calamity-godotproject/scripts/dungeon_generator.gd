@@ -9,7 +9,7 @@ var enemyglobin = preload("res://scenes/enemyglobin.tscn")
 var used_positions = {}
 var door_distance_offsets = {}
 var player_spawn_room_location: Vector2
-var stairs_cant_spawn_in_start_room = true
+var stairs_can_spawn_in_start_room = false
 var attempted_stair_rooms = [] # Tracks what rooms have been attempted to place a staircase in to avoid repeats
 var NUM_ROOMS = min(global_script.floors + 1, 5) # 5 is ideal with 15 removal
 #var NUM_ROOMS = 5 # 5 is ideal with 15 removal
@@ -32,6 +32,7 @@ var mouse_pos_label
 
 # SPECIAL --------------------------------------------------------------------------------------------------------------
 func _ready():
+	global_script.restarting = false
 	global_script.restart_allowed = true
 	generate_dungeon()
 	#wait_for(2)
@@ -47,11 +48,13 @@ func _ready():
 func _process(delta):
 	# cmd+R or ctrl+R press to restart the scene
 	if Input.is_action_pressed("restart_scene") and global_script.restart_allowed:
+		global_script.restarting = true
 		restart_scene()
 	
 	global_script.time_survived += delta
 	update_stats()
-	#update_mouse_pos()
+	if global_script.restarting == false: # Avoids NULL PARAMETER ERROR when restarting
+		update_mouse_pos()
 	
 func restart_scene():
 	global_script.restart_allowed = false
@@ -266,25 +269,31 @@ func get_random_room_location() -> Vector2:
 		#return true # avoids maximum recursion depth error
 		
 func is_spawnable_room(room_location: Vector2, is_player = false) -> bool:
-	if stairs_cant_spawn_in_start_room:
-		if !is_player and room_location == player_spawn_room_location: # Nothing can spawn in the player's spawn room
-			return false
+	if stairs_can_spawn_in_start_room:
+		return true
+	if !is_player and room_location == player_spawn_room_location: # Nothing can spawn in the player's spawn room
+		return false
 	return used_positions.has(room_location) and used_positions[room_location].is_in_group("spawnable_room")
 	
 func is_vector_in_range(vector: Vector2, min: int, max: int) -> bool:
 	return vector.x >= min and vector.x <= max and vector.y >= min and vector.y <= max
 
-func get_valid_spawn_location(season: bool = false, is_player: bool = false, is_stairs: bool = false) -> Vector2:
+func get_valid_spawn_location(season: bool = false, is_player: bool = false, is_stairs: bool = false, i: int = 0, ) -> Vector2:
+	i += 1 # TRACKING i IS NECESSARY FOR IT TO NOT EXPLODE ON AN INFINITE RECURSION ERROR. DO NOT ASK ME WHY THIS FIXED IT, I DONT KNOW
+	#print(i)
+	#print("GVSL")
 	var room_location: Vector2
 	if is_stairs:
-		print("\n\n\nstairs")
+		#print("\n\n\nstairs")
 		room_location = get_furthest_spawnable_room(player_spawn_room_location) # -> Vector 2
+		#print("Got room location")
 	else:
 		room_location = get_random_room_location()
-		
+	
 	if is_spawnable_room(room_location, is_player):
 		if is_stairs:
-			print("SPAWNABLE", room_location)
+			#print("it is a spawnable room")
+			stairs_can_spawn_in_start_room = false
 			
 		if is_player:
 			player_spawn_room_location = room_location
@@ -296,10 +305,11 @@ func get_valid_spawn_location(season: bool = false, is_player: bool = false, is_
 		# add some margin so player/enemies hitboxes don't spawn barely in the wall of an adjacent room
 		if is_vector_in_range(tile_in_room, room_location.x + 15, room_location.y + 140) and season:
 			salt = salt(0,16)
-			
+		
+		#print("FINAL POSITION: ", room_location + tile_increment + salt)
 		return room_location + tile_increment + salt
 	else:
-		return get_valid_spawn_location(season, is_player, is_stairs)
+		return get_valid_spawn_location(i, season, is_player, is_stairs)
 		
 func rearrange_sibling_nodes(node1, node2):
 	var parent = node1.get_parent()
@@ -310,14 +320,16 @@ func get_furthest_spawnable_room(room_position: Vector2) -> Vector2:
 	var furthest_room_position = Vector2(-INF,INF) # non spawnable
 	
 	while !is_spawnable_room(furthest_room_position): # Until we get the furthest spawnable room
+		#print("SORTED ROOMS SIZE", sorted_rooms.size())
 		if sorted_rooms.size() > 0:
 			furthest_room_position = sorted_rooms.pop_back().keys()[0]
-		else:
-			stairs_cant_spawn_in_start_room = false
-			print("FURTHEST IS START ROOM")
+		else: # When there are no other options except the start_room
+			stairs_can_spawn_in_start_room = true
+			#print("FURTHEST IS START ROOM", room_position)
 			furthest_room_position = player_spawn_room_location
 			
-	print("RETURNING FURTHEST ROOM POS: ", furthest_room_position)
+	#print("PLAYERSPAWN ROOM LOCATION", player_spawn_room_location)
+	#print("RETURNING FURTHEST ROOM POS: ", furthest_room_position)
 	return furthest_room_position
 	
 func get_sorted_room_distances_from(start_position: Vector2) -> Array:
@@ -325,15 +337,15 @@ func get_sorted_room_distances_from(start_position: Vector2) -> Array:
 	var sorted_rooms: Array
 	var new_distance
 	
-	print("USED POSITIONS SIZE:", used_positions.size())
+	#print("USED POSITIONS SIZE:", used_positions.size())
 	for room_pos in used_positions.keys():
 		new_distance = start_position.distance_to(room_pos)
 		if room_pos != start_position:
 			distances_hash[room_pos] = new_distance
-	print("\nDISTANCES HASH", distances_hash)
+	#print("\nDISTANCES HASH", distances_hash)
 		
 	var ordered_distances = bubble_sort_vector2s_list(distances_hash.values())
-	print("\nORDERED DISTANCES ARRAY", ordered_distances)
+	#print("\nORDERED DISTANCES ARRAY", ordered_distances)
 	var available_rooms = distances_hash.keys()
 	for distance in ordered_distances:
 		for room_pos in available_rooms:
@@ -341,12 +353,12 @@ func get_sorted_room_distances_from(start_position: Vector2) -> Array:
 				var index = available_rooms.find(room_pos)
 				available_rooms.remove_at(index)
 				sorted_rooms.append({room_pos: distance})
-	print("\nSORTED ROOMS", sorted_rooms)
+	#print("\nSORTED ROOMS", sorted_rooms)
 	
 	var thing = []
 	for room in sorted_rooms:
 		thing.append(is_spawnable_room(room.keys()[0]))
-	print("THING: ", thing)
+	#print("THING: ", thing)
 	return sorted_rooms
 		
 func bubble_sort_vector2s_list(distances: Array) -> Array:
@@ -366,9 +378,12 @@ func bubble_sort_vector2s_list(distances: Array) -> Array:
 
 func place_staircase():
 	var tile_coord = get_valid_spawn_location(false, false, true)
+	#print("tile_coord", tile_coord)
 	var stairs = staircase.instantiate()
 	stairs.global_position = tile_coord
+	#print("about to place the stairs")
 	add_child(stairs)
+	#print("successfully placed stairs")
 	
 	# We need to know where the player's spawn room is to make sure enemies/stairs 
 	# don't spawn in the same room. This requires us to spawn the stairs after the player, but if
@@ -379,11 +394,11 @@ func place_staircase():
 func place_player(player_instance: CharacterBody2D = null):
 	var spawn_location = get_valid_spawn_location(true, true)
 	if player_instance: # Player is moving on to the next floor
-		player_instance.position = spawn_location
+		player_instance.global_position = spawn_location
 		add_child(player_instance)
 	else: # Player is starting a new attempt
 		player_instance = player.instantiate()
-		player_instance.position = spawn_location
+		player_instance.global_position = spawn_location
 		add_child(player_instance)
 		global_script.player_instance = player_instance
 	
@@ -397,11 +412,11 @@ func place_enemies(floors: int):
 	
 	for i in range(count):
 		var slime_instance = enemy.instantiate()
-		slime_instance.position = get_valid_spawn_location(true)
+		slime_instance.global_position = get_valid_spawn_location(true)
 		add_child(slime_instance)
 		
 		var enemyglobin_instance = enemyglobin.instantiate()
-		enemyglobin_instance.position = get_valid_spawn_location(true)
+		enemyglobin_instance.global_position = get_valid_spawn_location(true)
 		add_child(enemyglobin_instance)
 
 # UI --------------------------------------------------------------------------------------------------------------
