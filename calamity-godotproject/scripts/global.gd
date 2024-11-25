@@ -61,6 +61,7 @@ func reset_player_stats(): # function to set the player stats back to default
 # PLAYER PERSISTENCE
 var player_instance = null # variable that tracks if there is a player instance
 var previous_floor = null # tracks which floor the player was on
+var restarting = false
 
 func new_floor(): # function that creats a new floor and keeps track of the amount that have been gone through
 	floors += 1 # increases the floor count for the current game by 1
