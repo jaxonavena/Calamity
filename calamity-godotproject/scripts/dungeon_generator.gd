@@ -1,3 +1,12 @@
+'''
+Name: dungeon_generator.gd
+Description: This file randomly generates a new dungeon map with each new game or after a dungeon is completed
+Programmer: Jaxon Avena
+Date: 11/24
+Preconditions: Not really any inputs
+Postconditions: Returns a new map with a usable dungeon
+Faults: 
+'''
 extends Node2D
 
 @export var room_scenes: Array = []
