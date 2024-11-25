@@ -15,6 +15,7 @@ var player_chase = false
 var player = null
 
 var coin_bag = preload("res://scenes/item_drop.tscn") # import the scene to drop a coin bag
+var health_potion = preload("res://scenes/health_potion.tscn")
 var health = 50 # set health variable
 var player_in_attack_zone = false # set the enemy in the attack zone to false
 @onready var hit_effect = $HitEffect # sets the variable that triggers a hit to reduce health
@@ -86,10 +87,17 @@ func die(): # function for the enemy to die
 	global_script.kills += 1 # increase kills for the user by one
 	self.queue_free() # removes the enemy from the game
 
-func drop_items(): # function to drop items
-	var item_instance = coin_bag.instantiate() # makes a new instance of a coin bag
-	item_instance.global_position = $Marker2D.global_position # tells the item to drop where the enemy just died
-	get_parent().add_child(item_instance) # makes the item visible where the enemy died
+func drop_items():
+	var num = randi_range(0, 10)
+	if num > 7: # Chance to drop coins
+		place_item(coin_bag)
+	if num >= 5:
+		place_item(health_potion)
+		
+func place_item(item):
+	var item_instance = item.instantiate()
+	item_instance.global_position = $Marker2D.global_position
+	get_parent().add_child(item_instance)
 	
 func update_player_xp(): # function to update the player's XP
 	var xp = randi_range(3, 20) # randomly generate an amount of XP to add and add it to the player

@@ -105,11 +105,16 @@ func die(): # function to handle a goblin death
 	drop_items()
 	update_player_xp()
 	self.queue_free() # free the goblin sprite from the map, so remove it
-
-func drop_items(): # function to drop items when the enemy dies
-	var item_instance = coin_bag.instantiate() # add a coin bag instance 
-	item_instance.global_position = $Marker2D.global_position # tells the coin bag to drop where the goblin dies
-	get_parent().add_child(item_instance) # adds the item at the location where it dies
+	
+func drop_items():
+	var num = randi_range(0, 10)
+	if num > 2: # Chance to drop coins
+		place_item(coin_bag)
+		
+func place_item(item):
+	var item_instance = item.instantiate()
+	item_instance.global_position = $Marker2D.global_position
+	get_parent().add_child(item_instance)
 	
 func update_player_xp(): # function to update the player's XP
 	var xp = randi_range(3, 20) # randommly generate an amount of XP
