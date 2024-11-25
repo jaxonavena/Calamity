@@ -1,15 +1,17 @@
 extends Node2D
 
+# PRELOAD SCENES
 @export var room_scenes: Array = []
 var border_room = preload("res://scenes/border_room.tscn")
 var staircase = preload("res://scenes/staircase.tscn")
 var player = preload("res://scenes/player.tscn")
 var enemy = preload("res://scenes/enemy.tscn")
 var enemyglobin = preload("res://scenes/enemyglobin.tscn")
-var used_positions = {}
-var door_distance_offsets = {}
-var player_spawn_room_location: Vector2
-var stairs_can_spawn_in_start_room = false
+
+var used_positions = {} # Tracks locations of rooms on the map
+var door_distance_offsets = {} # Tracks Vector2s of distances from each door in a room to the base location of the room
+var player_spawn_room_location: Vector2 # Track which room the player spawns in
+var stairs_can_spawn_in_start_room = false # Only true when there are no other spawnable rooms
 var attempted_stair_rooms = [] # Tracks what rooms have been attempted to place a staircase in to avoid repeats
 var NUM_ROOMS = min(global_script.floors + 1, 5) # 5 is ideal with 15 removal
 #var NUM_ROOMS = 5 # 5 is ideal with 15 removal
@@ -32,13 +34,12 @@ var mouse_pos_label
 
 # SPECIAL --------------------------------------------------------------------------------------------------------------
 func _ready():
-	global_script.restarting = false
-	global_script.restart_allowed = true
-	generate_dungeon()
-	#wait_for(2)
-	place_player(global_script.player_instance)
-	place_staircase()
-	place_enemies(global_script.floors)
+	global_script.restarting = false # Currently restarting
+	global_script.restart_allowed = true # Allowed to restart
+	generate_dungeon() # Build the map
+	place_player(global_script.player_instance) # Put the player on the map
+	place_staircase() # Put the stairs far away from the player
+	place_enemies(global_script.floors) # put the enemies on the map
 	
 	# UI
 	find_stat_labels()
@@ -51,24 +52,27 @@ func _process(delta):
 		global_script.restarting = true
 		restart_scene()
 	
-	global_script.time_survived += delta
+	global_script.time_survived += delta #increment timer display
 	update_stats()
 	if global_script.restarting == false: # Avoids NULL PARAMETER ERROR when restarting
 		update_mouse_pos()
 	
 func restart_scene():
-	global_script.restart_allowed = false
+	global_script.restart_allowed = false # Currently restarting, so don't allow another restart
 	# Reload the current scene
-	var current_scene = get_tree().current_scene
+	var current_scene = get_tree().current_scene # Get dungeon_generator
 	global_script.player_instance = null
 	global_script.reset_player_stats()
 	get_tree().reload_current_scene() # will reset restart_allowed = true
 	
-func wait_for(time: float):
+func wait_for(time: float): # sleep(n)
 	await get_tree().create_timer(time).timeout 
 	
 # DUNGEON (build overall map) --------------------------------------------------------------------------------------------------------------
 func generate_dungeon():
+	# Builds the map
+	#First places a starting room down, then recursively builds off of that before removing a percentage of the placed rooms
+	# After rooms are removed, every empty edge is filled with a border room
 	var start_room = init_dungeon()
 	
 	place_connected_rooms(start_room, NUM_ROOMS) #recursive
@@ -85,7 +89,7 @@ func init_dungeon() -> Node2D:
 	placed_rooms.append(start_room)
 	
 	used_positions[start_room.global_position] = start_room
-	calculate_door_distance_offsets(start_room)
+	calculate_door_distance_offsets(start_room) # Since every room is the same dimensions, we only call this once
 	return start_room
 	
 func instance_room() -> Node2D:
@@ -95,25 +99,27 @@ func instance_room() -> Node2D:
 
 
 func place_connected_rooms(current_room: Node2D, remaining_rooms: int):
-	if remaining_rooms <= 0:
+	# Recursively place rooms that are connected together to build the map
+	
+	if remaining_rooms <= 0: # Base case
 		return
 
-	var current_doors = get_door_markers(current_room)
-	while current_doors.size() > 0:
+	var current_doors = get_door_markers(current_room) # Finds the Marker2D door nodes in the scene
+	while current_doors.size() > 0: # Until we've iterated on all the available doors
 		# pick a random side
 		var random_index = randi_range(0, current_doors.size() - 1)
 		var door = current_doors[random_index]
 		current_doors.remove_at(random_index) # pop
 		
+		# make the new room
 		var new_room = instance_room()
 		var new_room_pos = current_room.global_position
-		
-		new_room.global_position = determine_new_room_pos(door, new_room_pos)
+		new_room.global_position = determine_new_room_pos(door, new_room_pos) # Find adjacent room spot depending on which side the door is on
 			
-		if used_positions.has(new_room.global_position):
-			continue  # Skip if there's already a connection here
+		if used_positions.has(new_room.global_position): # unless we've already put something there
+			continue
 				
-		add_child(new_room)
+		add_child(new_room) # place the new room
 		
 		placed_rooms.append(new_room)
 		used_positions[new_room.global_position] = new_room
@@ -125,13 +131,14 @@ func place_connected_rooms(current_room: Node2D, remaining_rooms: int):
 			
 		# THis also might break everything, but might be ok
 		var break_early = randi_range(1, 100)
-		if break_early <= 10: #25% chance to not place four rooms around
+		if break_early <= 10: #chance to not place four rooms around
 			continue
 			
 		# Recursively place more rooms
 		place_connected_rooms(new_room, remaining_rooms - 1)
 
 func calculate_door_distance_offsets(current_room: Node2D):
+	# Calculate distance from room_pos to each door in the room
 	var room_pos = current_room.global_position
 	var current_doors = get_door_markers(current_room)
 	for door in current_doors:
@@ -139,6 +146,7 @@ func calculate_door_distance_offsets(current_room: Node2D):
 		door_distance_offsets[door.name] = pos - room_pos
 		
 func remove_some_rooms(percentage: int):
+	# Delete the designated percentage of placed room
 	var initial_size = placed_rooms.size()
 	while placed_rooms.size() > initial_size - ceil(initial_size * (percentage / 100.0)): # Remove designated percentage of rooms
 		var random_index = randi_range(0, placed_rooms.size() - 1)
@@ -147,7 +155,7 @@ func remove_some_rooms(percentage: int):
 		if used_positions.has(room.global_position):
 			used_positions.erase(room.global_position)
 			
-		room.queue_free()
+		room.queue_free() # delete from scene
 		placed_rooms.remove_at(random_index) # pop
 		
 		# SEE THE DUNGEON SHRINK
@@ -157,6 +165,7 @@ func remove_some_rooms(percentage: int):
 	remove_non_adjacent_rooms() # clean inaccessible straggler rooms
 
 func determine_new_room_pos(door: Node2D, current_pos: Vector2) -> Vector2:
+	# Depending on which side the given door is on, place an adjacent room
 	if door.name.begins_with("D1"):
 		return current_pos - Vector2(0,door_distance_offsets["D3"].y)
 	elif door.name.begins_with("D2"):
@@ -171,6 +180,7 @@ func determine_new_room_pos(door: Node2D, current_pos: Vector2) -> Vector2:
 		return Vector2.ZERO
 	
 func get_door_markers(room: Node2D) -> Array:
+	# Find all the Marker2D door nodes in a room scene
 	var door_markers = []
 	for child in room.get_children():
 		if child is Marker2D and child.name.begins_with("D"):
@@ -178,6 +188,9 @@ func get_door_markers(room: Node2D) -> Array:
 	return door_markers
 	
 func remove_non_adjacent_rooms():
+	# After removing a perecentage of rooms randomly, there is sometimes some dangling rooms that have no connected edges, but are catty-corner
+	# This function follows up to the previous removal function and finds and deletes any of these left over dangling room
+	
 	for current_position in used_positions.keys():  # Iterate over the keys in used_positions
 		# Iterate over all the other positions in the dictionary
 		var flag = false
@@ -192,6 +205,7 @@ func remove_non_adjacent_rooms():
 				break
 		
 		if !flag:
+			# There were no adjacent rooms found for the current room, so we delete it
 			var room = used_positions[current_position]
 			used_positions.erase(room.global_position)
 			room.queue_free()
@@ -202,11 +216,12 @@ func remove_non_adjacent_rooms():
 				await wait_for(DELAY)
 
 func is_adjacent(pos1: Vector2, pos2: Vector2) -> bool:
-	# check if the two positions are adjacent up, down, left, or right
+	# check if the two room positions are adjacent up, down, left, or right
 	var diff = pos1 - pos2
 	return (abs(diff.x) == 160 and diff.y == 0) or (abs(diff.y) == 160 and diff.x == 0)
 	
 func place_borders():
+	# Place the boundary border room scene down on all empty edges of the map
 	for current_position in used_positions.keys():  # Iterate over the keys in used_positions
 		var adjacent_spaces = []
 		adjacent_spaces.append(current_position + Vector2(0, 160)) #UP
@@ -214,20 +229,21 @@ func place_borders():
 		adjacent_spaces.append(current_position + Vector2(-160, 0)) #LEFT
 		adjacent_spaces.append(current_position + Vector2(160, 0)) #RIGHT
 		
+		# Place the borders down
 		for space in adjacent_spaces:
-			if used_positions.has(space):
+			if used_positions.has(space): # skip if position is taken
 				continue
 			else:
-				var border = border_room.instantiate()
+				var border = border_room.instantiate() # make
 				border.global_position = space
-				add_child(border)
+				add_child(border) # place
 				
 				# SEE THE DUNGEON ADD BORDERS
 				if delay:
 					await wait_for(DELAY)
 	
 # SPAWNING (player, enemies, stairs) --------------------------------------------------------------------------------------------------------------
-func salt(min: int, max: int) -> Vector2:
+func salt(min: int, max: int) -> Vector2: # Return a Vector2 between some range, used to salt a room's tile coordinate and randomize further
 	return Vector2(randi_range(min, max), randi_range(min, max))
 	
 func tile_increment() -> Vector2:
@@ -237,7 +253,7 @@ func tile_increment() -> Vector2:
 	var y = randi() % 10 * 16
 	return Vector2(x,y)
 	
-func get_random_room_location() -> Vector2:
+func get_random_room_location() -> Vector2: # i feel like you can guess
 	return used_positions.keys()[randi_range(0, used_positions.size() - 1)]
 	
 #func get_spawn_location() -> Vector2: # Pick a spawn spot for characters
@@ -269,16 +285,19 @@ func get_random_room_location() -> Vector2:
 		#return true # avoids maximum recursion depth error
 		
 func is_spawnable_room(room_location: Vector2, is_player = false) -> bool:
-	if stairs_can_spawn_in_start_room:
+	# Check if the room is spawnable
+	if stairs_can_spawn_in_start_room: # Only occurs when the stairs have no other option
 		return true
-	if !is_player and room_location == player_spawn_room_location: # Nothing can spawn in the player's spawn room
+	if !is_player and room_location == player_spawn_room_location: # Nothing can spawn in the player's spawn room normally
 		return false
-	return used_positions.has(room_location) and used_positions[room_location].is_in_group("spawnable_room")
+	return used_positions.has(room_location) and used_positions[room_location].is_in_group("spawnable_room") # Return true if it's a valid room scene and is spawnable
 	
-func is_vector_in_range(vector: Vector2, min: int, max: int) -> bool:
+func is_vector_in_range(vector: Vector2, min: int, max: int) -> bool: # take a guess
 	return vector.x >= min and vector.x <= max and vector.y >= min and vector.y <= max
 
 func get_valid_spawn_location(season: bool = false, is_player: bool = false, is_stairs: bool = false, i: int = 0, ) -> Vector2:
+	# Recursively finds a spawnable location on the map
+	
 	i += 1 # TRACKING i IS NECESSARY FOR IT TO NOT EXPLODE ON AN INFINITE RECURSION ERROR. DO NOT ASK ME WHY THIS FIXED IT, I DONT KNOW
 	#print(i)
 	#print("GVSL")
@@ -312,17 +331,19 @@ func get_valid_spawn_location(season: bool = false, is_player: bool = false, is_
 		return get_valid_spawn_location(i, season, is_player, is_stairs)
 		
 func rearrange_sibling_nodes(node1, node2):
+	# Swaps node positions in the scene tree
 	var parent = node1.get_parent()
 	parent.move_child(node2, node1.get_index())  # Move Node2 before Node1 in scene tree
 	
 func get_furthest_spawnable_room(room_position: Vector2) -> Vector2:
-	var sorted_rooms = get_sorted_room_distances_from(room_position)
+	# Find the furthest spawnable room from a given room_positino
+	var sorted_rooms = get_sorted_room_distances_from(room_position) # For all rooms in the map, sort their distances from the given room from least -> greatest
 	var furthest_room_position = Vector2(-INF,INF) # non spawnable
 	
 	while !is_spawnable_room(furthest_room_position): # Until we get the furthest spawnable room
 		#print("SORTED ROOMS SIZE", sorted_rooms.size())
-		if sorted_rooms.size() > 0:
-			furthest_room_position = sorted_rooms.pop_back().keys()[0]
+		if sorted_rooms.size() > 0: # if we still have options
+			furthest_room_position = sorted_rooms.pop_back().keys()[0] # grab the furthest room
 		else: # When there are no other options except the start_room
 			stairs_can_spawn_in_start_room = true
 			#print("FURTHEST IS START ROOM", room_position)
@@ -333,19 +354,25 @@ func get_furthest_spawnable_room(room_position: Vector2) -> Vector2:
 	return furthest_room_position
 	
 func get_sorted_room_distances_from(start_position: Vector2) -> Array:
-	var distances_hash: Dictionary
-	var sorted_rooms: Array
+	# Return a list of room positions distance from start_position from least->greatest
+	var distances_hash: Dictionary # K:V = room_position: distance to start_position
+	var sorted_rooms: Array # Sorted array of room positions via distance from start_position from least -> greatest
 	var new_distance
 	
 	#print("USED POSITIONS SIZE:", used_positions.size())
+	
+	# Build distances hash
 	for room_pos in used_positions.keys():
 		new_distance = start_position.distance_to(room_pos)
 		if room_pos != start_position:
 			distances_hash[room_pos] = new_distance
 	#print("\nDISTANCES HASH", distances_hash)
 		
+	# Bubble sort the distances from least -> greatest
 	var ordered_distances = bubble_sort_vector2s_list(distances_hash.values())
 	#print("\nORDERED DISTANCES ARRAY", ordered_distances)
+	
+	# Build sorted_rooms list
 	var available_rooms = distances_hash.keys()
 	for distance in ordered_distances:
 		for room_pos in available_rooms:
@@ -355,13 +382,14 @@ func get_sorted_room_distances_from(start_position: Vector2) -> Array:
 				sorted_rooms.append({room_pos: distance})
 	#print("\nSORTED ROOMS", sorted_rooms)
 	
-	var thing = []
-	for room in sorted_rooms:
-		thing.append(is_spawnable_room(room.keys()[0]))
+	#var thing = []
+	#for room in sorted_rooms:
+		#thing.append(is_spawnable_room(room.keys()[0]))
 	#print("THING: ", thing)
 	return sorted_rooms
 		
 func bubble_sort_vector2s_list(distances: Array) -> Array:
+	# Bubble sort Vector2s
 	var n = distances.size()
 	for i in range(n):
 		var swapped = false
@@ -377,13 +405,10 @@ func bubble_sort_vector2s_list(distances: Array) -> Array:
 	return distances
 
 func place_staircase():
-	var tile_coord = get_valid_spawn_location(false, false, true)
-	#print("tile_coord", tile_coord)
+	var tile_coord = get_valid_spawn_location(false, false, true) # find where to put it
 	var stairs = staircase.instantiate()
 	stairs.global_position = tile_coord
-	#print("about to place the stairs")
-	add_child(stairs)
-	#print("successfully placed stairs")
+	add_child(stairs) # put it there
 	
 	# We need to know where the player's spawn room is to make sure enemies/stairs 
 	# don't spawn in the same room. This requires us to spawn the stairs after the player, but if
@@ -392,11 +417,11 @@ func place_staircase():
 	rearrange_sibling_nodes($Player, $Staircase)
 	
 func place_player(player_instance: CharacterBody2D = null):
-	var spawn_location = get_valid_spawn_location(true, true)
-	if player_instance: # Player is moving on to the next floor
+	var spawn_location = get_valid_spawn_location(true, true) # find where to put it
+	if player_instance: # Player is moving on to the next floor, save stats
 		player_instance.global_position = spawn_location
 		add_child(player_instance)
-	else: # Player is starting a new attempt
+	else: # Player is starting a new attempt, restart fresh
 		player_instance = player.instantiate()
 		player_instance.global_position = spawn_location
 		add_child(player_instance)
@@ -410,6 +435,7 @@ func place_enemies(floors: int):
 	var max = int(4 * floors)
 	var count = randi() % (max - min + 1) + min
 	
+	# Place them down
 	for i in range(count):
 		var slime_instance = enemy.instantiate()
 		slime_instance.global_position = get_valid_spawn_location(true)
@@ -421,6 +447,7 @@ func place_enemies(floors: int):
 
 # UI --------------------------------------------------------------------------------------------------------------
 func find_stat_labels():
+	# Grab on to the stat labels on the UI
 	stat_display = get_node("CanvasLayer/StatDisplay") 
 	floors_label = stat_display.get_node("FloorsCleared") 
 	time_survived_label = stat_display.get_node("TimeSurvived") 
@@ -430,6 +457,7 @@ func find_stat_labels():
 	health_label = stat_display.get_node("Health")
 				
 func update_stats():
+	# Update the stat labels on the UI
 	floors_label.text = "Floors " + str(global_script.floors)
 	time_survived_label.text = "Time: " + str(ceil(global_script.time_survived))
 	kills_label.text = "Kills: " + str(global_script.kills)
@@ -438,7 +466,9 @@ func update_stats():
 	health_label.text = "HP: "  + ("|".repeat($Player.health / 10))
 	
 func find_debug_labels():
+	# Grab on to the debug labels on the UI
 	mouse_pos_label = stat_display.get_node("MousePos")
 	
 func update_mouse_pos():
+	# Update the mouse position display
 	mouse_pos_label.text = "Coords: " + str(get_global_mouse_position())
