@@ -27,9 +27,14 @@ text = "Play"
 layout_mode = 2
 text = "Quit"
 
+[node name="Settings" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Settings"
+
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(20, 33)
 zoom = Vector2(5, 5)
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Play" to="." method="_on_play_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Quit" to="." method="_on_quit_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Settings" to="." method="_on_settings_pressed"]
