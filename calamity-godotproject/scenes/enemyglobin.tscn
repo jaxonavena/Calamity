@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://cuct8p78s0u5u"]
+[gd_scene load_steps=26 format=3 uid="uid://b0y666ub8mdh5"]
 
 [ext_resource type="Texture2D" uid="uid://8fe272mr3wk6" path="res://art/enemies/goblin/goblin_idle_spritesheet.png" id="2_0s5fg"]
 [ext_resource type="Texture2D" uid="uid://cpwe7yjo4quvw" path="res://art/enemies/goblin/goblin_run_spritesheet.png" id="3_aoqpk"]

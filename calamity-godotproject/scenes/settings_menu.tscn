@@ -38,4 +38,15 @@ offset_bottom = 459.0
 theme_override_font_sizes/font_size = 100
 text = "100"
 
+[node name="BackButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 908.0
+offset_top = 491.0
+offset_right = 1249.0
+offset_bottom = 636.0
+theme_override_font_sizes/font_size = 100
+text = "Back"
+
 [connection signal="value_changed" from="HSlider" to="." method="_on_h_slider_value_changed"]
+[connection signal="pressed" from="BackButton" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]

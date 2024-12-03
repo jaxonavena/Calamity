@@ -28,3 +28,6 @@ func _on_h_slider_value_changed(value: float) -> void:
 	AudioServer.set_bus_volume_db(0, linear_to_db(value))  # Adjust the master audio bus volume
 	$VolumeValue.text = str(int(value))  # Update the volume display label
 	save_volume_setting(value)  # Save the current volume
+
+func _on_back_button_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
