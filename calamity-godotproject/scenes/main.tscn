@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://btnbnmufp206q"]
+[gd_scene load_steps=11 format=3 uid="uid://btnbnmufp206q"]
 
 [ext_resource type="Script" path="res://scripts/global.gd" id="1_k60vj"]
 [ext_resource type="Texture2D" uid="uid://c0f531kq8nbna" path="res://art/full tilemap.png" id="1_pjx2r"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bmjsqsvb6225k" path="res://scenes/enemy.tscn" id="3_balui"]
 [ext_resource type="PackedScene" uid="uid://cuct8p78s0u5u" path="res://scenes/enemyglobin.tscn" id="5_kijxy"]
 [ext_resource type="PackedScene" uid="uid://cy4xx1hlip17m" path="res://scenes/projectile.tscn" id="6_t56a7"]
+[ext_resource type="PackedScene" uid="uid://cx403i58w3og5" path="res://scenes/audio.tscn" id="7_c2nx7"]
 
 [sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_jpieh"]
 
@@ -134,3 +135,5 @@ collision_layer = 3
 [node name="Projectile" parent="." instance=ExtResource("6_t56a7")]
 position = Vector2(14, 23)
 collision_layer = 9
+
+[node name="Audio" parent="." instance=ExtResource("7_c2nx7")]
