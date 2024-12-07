@@ -30,7 +30,6 @@ const speed = 120	#speed of player movement
 var current_dir = "down" #Starting player direction
 var enemy_in_attack_range = false #Enemy hit range boolean
 var enemy_attack_cooldown = true  # enemy attack cooldown for hits
-var health = 250 #player health
 var player_alive = true #boolean for if player is alive
 var attack_in_progess = false  # if player is attacking 
 var projectile_hit = false #if projectile hit 
@@ -81,10 +80,10 @@ func _physics_process(delta):
 		enemy_attack() # run the enemy attack function
 		attack() #run the attack function
 	
-		if health <= 0: #check if player is alive
+		if global_script.player_health <= 0: #check if player is alive
 			player_alive = false #set to false if player dies
 			#add death functionality here
-			health = 0 #set health to 0 
+			global_script.player_health = 0 #set global_script.player_health to 0 
 			$AnimatedSprite2D.play("death") #play death animation
 			print("player is dead") #print 
 			global_script.player_instance = null #erase player
@@ -116,6 +115,8 @@ func player_movement(delta): # movement function
 		velocity.y = -speed #set y 
 	elif global_script.player_can_use_stairs and Input.is_key_pressed(KEY_E): #E is pressed
 		global_script.new_floor() #set new floor
+	elif global_script.no_path_to_stairs: #  there is no viable path to the stairs
+		global_script.new_floor(0) # set new floor without incrementing the floorn ubmer
 	else:
 		play_animation(0) #play animation
 		velocity.x = 0 #set x
@@ -123,13 +124,6 @@ func player_movement(delta): # movement function
 		
 	move_and_slide() #deal with movement and collsiions 
 
-func restart_scene():
-	# Reload the current scene
-	var current_scene = get_tree().current_scene #set scene
-	global_script.player_instance = null # does this do anything?
-	global_script.reset_player_stats() #reset stats
-	get_tree().reload_current_scene() #load current scene
-	
 func play_animation(movement): # animation function
 	var dir = current_dir # set direction
 	var anim = $AnimatedSprite2D #grab sprite
@@ -183,7 +177,7 @@ func _on_player_hitbox_body_exited(body): #function to update if object leaves h
 func enemy_attack(shot = false): #deal with enemy attacks
 	if (enemy_in_attack_range and enemy_attack_cooldown == true) or shot: #if it is a enemy attack
 		if !global_script.player_is_invincible: #check if invincible 
-			health = health - 5; #decrease health
+			global_script.player_health = global_script.player_health - 5; #decrease global_script.player_health
 		enemy_attack_cooldown = false #set cooldown to false
 		$enemy_attackcooldown.start() #start cooldown
 		#print("player taken damage\n")

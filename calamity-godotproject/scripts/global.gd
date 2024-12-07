@@ -15,8 +15,10 @@ var player_current_attack = false
 var player_can_use_stairs = false
 var player_is_invincible = false
 var restart_allowed = true
+var no_path_to_stairs = false
 
 # PLAYER STATS SET TO DEFAULT
+var player_health = 250
 var player_coins = 0
 var player_xp = 0
 var floors = 1
@@ -67,16 +69,7 @@ var player_instance = null # variable that tracks if there is a player instance
 var previous_floor = null # tracks which floor the player was on
 var restarting = false
 
-func new_floor(): # function that creats a new floor and keeps track of the amount that have been gone through
-	floors += 1 # increases the floor count for the current game by 1
+func new_floor(num = 1): # function that creats a new floor and keeps track of the amount that have been gone through
+	floors += num # increases the floor count for the current game by 1
 	previous_floor.remove_child(player_instance) # removes the player from the previous floor
-	get_tree().change_scene_to_file("res://scenes/dungeon_generator.tscn") # generats a new random scene to use
-
-
-
-
-			
-		
-		
-
-	
+	get_tree().reload_current_scene()
