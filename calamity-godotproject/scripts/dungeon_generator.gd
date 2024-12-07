@@ -19,10 +19,12 @@ var enemyglobin = preload("res://scenes/enemyglobin.tscn")
 
 
 var used_positions = {} # Tracks locations of rooms on the map
+var used_border_positions = {} # Tracks locations of border positions
 var door_distance_offsets = {} # Tracks Vector2s of distances from each door in a room to the base location of the room
 var player_spawn_room_location: Vector2 # Track which room the player spawns in
 var stairs_can_spawn_in_start_room = false # Only true when there are no other spawnable rooms
 var attempted_stair_rooms = [] # Tracks what rooms have been attempted to place a staircase in to avoid repeats
+var stair_room_location: Vector2 # Track which room the stairs spawn in
 var NUM_ROOMS = min(global_script.floors + 1, 5) # 5 is ideal with 15 removal
 #var NUM_ROOMS = 5 # 5 is ideal with 15 removal
 const ROOM_REMOVAL_PERCENTAGE = 15 #15 is ideal with 5 size
@@ -44,11 +46,13 @@ var mouse_pos_label
 
 # SPECIAL --------------------------------------------------------------------------------------------------------------
 func _ready():
+	global_script.no_path_to_stairs = false
 	global_script.restarting = false # Currently restarting
 	global_script.restart_allowed = true # Allowed to restart
 	generate_dungeon() # Build the map
 	place_player(global_script.player_instance) # Put the player on the map
 	place_staircase() # Put the stairs far away from the player
+	ensure_path_from_player_to_stairs()
 	place_enemies(global_script.floors) # put the enemies on the map
 	
 	# UI
@@ -62,20 +66,22 @@ func _process(delta):
 	if Input.is_action_pressed("restart_scene") and global_script.restart_allowed:
 		global_script.restarting = true
 		restart_scene()
+		
 	if Input.is_action_just_pressed("pause"):
 		global_script.pause_game = !global_script.pause_game
+		
 	if !global_script.pause_game:
 		global_script.time_survived += delta #increment timer display
 		update_stats()
+		
 	if global_script.restarting == false: # Avoids NULL PARAMETER ERROR when restarting
 		update_mouse_pos()
 	
 func restart_scene():
 	global_script.restart_allowed = false # Currently restarting, so don't allow another restart
-	# Reload the current scene
-	var current_scene = get_tree().current_scene # Get dungeon_generator
 	global_script.player_instance = null
 	global_script.reset_player_stats()
+		
 	get_tree().reload_current_scene() # will reset restart_allowed = true
 	
 func wait_for(time: float): # sleep(n)
@@ -248,13 +254,97 @@ func place_borders():
 				continue
 			else:
 				var border = border_room.instantiate() # make
+				used_border_positions[space] = border
 				border.global_position = space
 				add_child(border) # place
 				
 				# SEE THE DUNGEON ADD BORDERS
 				if delay:
 					await wait_for(DELAY)
+					
+func ensure_path_from_player_to_stairs():
+	var path = find_path(player_spawn_room_location, stair_room_location)
+	#print("PATH", path)
+	if path == null:
+		global_script.no_path_to_stairs = true # will regen a new_floor using the player instance
 	
+func find_path(current, goal, connected = [], visited = []):
+	# Add the current position to the connected path
+	connected.append(current)
+	if current not in visited:
+		visited.append(current) # Mark as visited
+
+	# If the current position is the goal, return the path
+	if current == goal:
+		return connected
+
+	# Directions to explore
+	var directions = [
+		current + Vector2(0, 160),
+		current + Vector2(0, -160),
+		current + Vector2(-160, 0),
+		current + Vector2(160, 0)
+	]
+
+	# Explore neighbors
+	for pos in directions:
+		if pos in used_positions and pos not in visited:
+			var result = find_path(pos, goal, connected, visited)
+			if result != null:
+				return result  # Return the path if found
+
+	# If no path was found, return null
+	return null
+	
+#func find_path(current, goal): #BFS version, no recursion
+	#print("Finding path")
+#
+	## Initialize a queue with the starting point
+	#var queue = []
+	#queue.push_back([current])  # The queue stores paths, so we push the current position in a list
+#
+	## Create a set to keep track of visited nodes
+	#var visited = []
+#
+	## Directions to explore
+	#var directions = [
+		#Vector2(0, 160),   # Up
+		#Vector2(0, -160),  # Down
+		#Vector2(-160, 0),  # Left
+		#Vector2(160, 0)    # Right
+	#]
+#
+	## While there are paths to explore
+	#while queue.size() > 0:
+		## Dequeue the first path from the queue
+		#var path = queue.pop_front()
+		## Get the last node in the current path
+		#var current_pos = path[-1]
+#
+		## If we have already visited this node, skip it
+		#if current_pos in visited:
+			#continue
+		#
+		## Mark the current node as visited
+		#visited.append(current_pos)
+#
+		## If the current node is the goal, return the path
+		#if current_pos == goal:
+			#return path
+#
+		## Explore neighbors
+		#for direction in directions:
+			#var neighbor = current_pos + direction
+			#if neighbor in used_positions and neighbor not in visited:
+				## Create a new path extending the current one
+				#var new_path = path.duplicate()  # Duplicate the path to avoid mutating the original path
+				#new_path.append(neighbor)
+				#queue.push_back(new_path)  # Enqueue the new path
+#
+	## If no path was found, return null
+	#return null
+
+
 # SPAWNING (player, enemies, stairs) --------------------------------------------------------------------------------------------------------------
 func salt(min: int, max: int) -> Vector2: # Return a Vector2 between some range, used to salt a room's tile coordinate and randomize further
 	return Vector2(randi_range(min, max), randi_range(min, max))
@@ -318,6 +408,7 @@ func get_valid_spawn_location(season: bool = false, is_player: bool = false, is_
 	if is_stairs:
 		#print("\n\n\nstairs")
 		room_location = get_furthest_spawnable_room(player_spawn_room_location) # -> Vector 2
+		stair_room_location = room_location
 		#print("Got room location")
 	else:
 		room_location = get_random_room_location()
@@ -476,7 +567,7 @@ func update_stats():
 	kills_label.text = "Kills: " + str(global_script.kills)
 	coins_label.text = "Coins: " + str(global_script.player_coins)
 	xp_label.text = "XP: " + str(global_script.player_xp)
-	health_label.text = "HP: "  + ("|".repeat($Player.health / 10))
+	health_label.text = "HP: "  + ("|".repeat(global_script.player_health / 10))
 	
 func find_debug_labels():
 	# Grab on to the debug labels on the UI
@@ -485,19 +576,3 @@ func find_debug_labels():
 func update_mouse_pos():
 	# Update the mouse position display
 	mouse_pos_label.text = "Coords: " + str(get_global_mouse_position())
-	
-
-#signal toggle_game_paused(is_paused : bool)
-#
-#var game_paused: bool = false:
-	#get:
-		#return game_paused
-	#set(value):
-		#game_paused = value
-		#get_tree().paused = game_paused
-		#
-		#emit_signal("toggle_game_paused", game_paused)
-
-#func _input(event: InputEvent):
-	#if event.is_action_pressed("ui_cancel"):
-		#game_paused = !game_paused
