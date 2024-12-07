@@ -1,21 +1,20 @@
 '''
 Name: main_menu.gd
-Description: File that handles the menu that says to play or quit
+Description: File that handles the main menu functionality: play, quit, and settings.
 Programmer: Jaxon Avena
 Date: 11/3
 Preconditions: None
-Postconditions: Either playes the game or quits the game
-Faults: 
+Postconditions: Either starts the game, opens the settings menu, or quits the game.
+Faults: None
 '''
-extends Control # attachs the scrip to a Control node that is usually used for UI elemnts (like buttons in this case)
+extends Control  # Attach this script to a Control node, typically used for UI elements.
 
+func _on_play_pressed() -> void:  # Function called when the "Play" button is pressed.
+	global_script.reset_player_stats()  # Reset the player's stats.
+	get_tree().change_scene_to_file("res://scenes/dungeon_generator.tscn")  # Switch to the dungeon scene.
 
+func _on_quit_pressed() -> void:  # Function called when the "Quit" button is pressed.
+	get_tree().quit()  # Exit the game.
 
-func _on_play_pressed() -> void: # funtion that runs if the player selects the "play" button
-	#get_tree().change_scene_to_file("res://scenes/main.tscn")
-	global_script.reset_player_stats() # resets the player's stats
-	get_tree().change_scene_to_file("res://scenes/dungeon_generator.tscn") # changes the scene to generate a new dungeon
-	
-
-func _on_quit_pressed() -> void: # function that runs if the player selects the "quit" button
-	get_tree().quit() # quits the game
+func _on_settings_pressed() -> void:  # Function called when the "Settings" button is pressed.
+	get_tree().change_scene_to_file("res://scenes/settings_menu.tscn")  # Switch to the settings menu scene.

@@ -1,0 +1,52 @@
+[gd_scene load_steps=2 format=3 uid="uid://dhtop6edftbys"]
+
+[ext_resource type="Script" path="res://scripts/settings_menu.gd" id="1_kcjc5"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 106.0
+offset_top = 140.0
+offset_right = 146.0
+offset_bottom = 180.0
+script = ExtResource("1_kcjc5")
+
+[node name="Volume" type="Label" parent="."]
+layout_mode = 2
+offset_left = 572.0
+offset_top = 305.0
+offset_right = 1013.0
+offset_bottom = 470.0
+theme_override_font_sizes/font_size = 120
+text = "Volume
+"
+
+[node name="HSlider" type="HSlider" parent="."]
+layout_mode = 2
+offset_left = 1071.0
+offset_top = 331.0
+offset_right = 1334.0
+offset_bottom = 461.0
+step = 10.0
+
+[node name="VolumeValue" type="Label" parent="."]
+layout_mode = 2
+offset_left = 1369.0
+offset_top = 322.0
+offset_right = 1540.0
+offset_bottom = 459.0
+theme_override_font_sizes/font_size = 100
+text = "100"
+
+[node name="BackButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 908.0
+offset_top = 491.0
+offset_right = 1249.0
+offset_bottom = 636.0
+theme_override_font_sizes/font_size = 100
+text = "Back"
+
+[connection signal="value_changed" from="HSlider" to="." method="_on_h_slider_value_changed"]
+[connection signal="pressed" from="BackButton" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
