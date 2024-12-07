@@ -47,7 +47,7 @@ var projectile1 = weapons[current_weapon_index] #default weapon
 
 func _process(delta):
 	# Shoot projectile when the player presses the shoot button
-	if !global_script.game_paused:
+	if !global_script.pause_game:
 		if Input.is_action_pressed("shoot") and can_shoot:
 			shoot_projectile() #run shoot function
 			can_shoot = false #set ability to shoot to false for cooldown
@@ -76,7 +76,7 @@ func _ready():
 	$AnimatedSprite2D.play("front_idle")  #set idle animation
 
 func _physics_process(delta):
-	if !global_script.game_paused:
+	if !global_script.pause_game:
 		player_movement(delta) # set movement funciton to run
 		enemy_attack() # run the enemy attack function
 		attack() #run the attack function

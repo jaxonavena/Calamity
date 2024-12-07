@@ -42,8 +42,9 @@ func on_lifetime_timeout():
 	queue_free()
 
 func _process(delta):
-	# Move the projectile in the direction it's facing
-	position += direction * speed * delta
+	if !global_script.pause_game:
+		# Move the projectile in the direction it's facing
+		position += direction * speed * delta
 	
 
 # Function to set the direction of the projectile
