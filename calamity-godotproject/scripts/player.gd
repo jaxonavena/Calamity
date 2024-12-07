@@ -26,13 +26,23 @@ extends CharacterBody2D
 
 
 # Player stuff
-const speed = 120	#speed of player movement
-var current_dir = "down" #Starting player direction
-var enemy_in_attack_range = false #Enemy hit range boolean
-var enemy_attack_cooldown = true  # enemy attack cooldown for hits
-var player_alive = true #boolean for if player is alive
-var attack_in_progess = false  # if player is attacking 
-var projectile_hit = false #if projectile hit 
+const speed = 120	
+var current_dir = "down"
+var enemy_in_attack_range = false
+var enemy_attack_cooldown = true
+var player_alive = true
+var attack_in_progess = false
+var projectile_hit = false
+var attack_cooldown = false 
+
+@onready var body = $Skeleton/Body
+@onready var hair = $Skeleton/Hair
+@onready var outfit = $Skeleton/Outfit
+@onready var accessory = $Skeleton/Accessory
+@onready var name_label = $Skeleton/Name
+@onready var attack_area = $AttackArea2D
+@onready var particles = $AttackParticle
+@onready var cool_down_timer = $attack_timer
 
 # Ranged weapon stuff
 @export var fire_rate: float = 0.5  # Time between shots
@@ -71,8 +81,12 @@ func shoot_projectile():
 	
 	
 func _ready():
-	$Camera2D.enabled = false #set camera
-	$AnimatedSprite2D.play("front_idle")  #set idle animation
+	initialize_player()
+	$Camera2D.enabled = false
+	
+	#attacks
+	attack_area.monitoring = false
+	attack_area.hide()
 
 func _physics_process(delta):
 	if !global_script.pause_game:
@@ -84,11 +98,10 @@ func _physics_process(delta):
 			player_alive = false #set to false if player dies
 			#add death functionality here
 			global_script.player_health = 0 #set global_script.player_health to 0 
-			$AnimatedSprite2D.play("death") #play death animation
 			print("player is dead") #print 
 			global_script.player_instance = null #erase player
 			get_tree().change_scene_to_file("res://scenes/main_menu.tscn") #change scene
-	
+
 		elif Input.is_action_just_pressed("toggle_camera"): #check toggle
 			$Camera2D.enabled = not $Camera2D.enabled # Press CMD+C to toggle the playe cam
 		
@@ -122,90 +135,102 @@ func player_movement(delta): # movement function
 		velocity.x = 0 #set x
 		velocity.y = 0 #set y
 		
-	move_and_slide() #deal with movement and collsiions 
-
-func play_animation(movement): # animation function
-	var dir = current_dir # set direction
-	var anim = $AnimatedSprite2D #grab sprite
-	if dir == "right": #if right 
-		anim.flip_h = false #dont flip sprite
-		if movement == 1: # if movement
-			anim.play("side_run") #play animation
-		elif movement == 0: #if no movement
-			if attack_in_progess == false: #if not attack
-				anim.play("side_idle") # play animation
-	if dir == "left": #if direction is left
-		anim.flip_h = true #flip sprite to face left
-		if movement == 1: # if movement
-			anim.play("side_run") #play animation 
-		elif movement == 0: #if no movement
-			if attack_in_progess == false: #if not attack
-				anim.play("side_idle") # play animation
-	if dir == "up": #if direction is up 
-		anim.flip_h = false #dont flip sprite
-		if movement == 1: # if movement
-			anim.play("backward_run") #play animation
-		elif movement == 0: #if no movement
-			if attack_in_progess == false: #if not attack
-				anim.play("backward_idle") #play animation
-	if dir == "down": #if direction is down
-		anim.flip_h = true #flip sprite
-		if movement == 1: #if movement
-			anim.play("front_run") #play animation
-		elif movement == 0: #if no movement
-			if attack_in_progess == false: # if no attack 
-				anim.play("front_idle") #play animation 
+	move_and_slide()
+		
+func restart_scene():
+	var current_scene = get_tree().current_scene
+	global_script.player_instance = null # does this do anything?
+	global_script.reset_player_stats()
+	get_tree().reload_current_scene()
+	
+func play_animation(movement):
+	var dir = current_dir
+	var anim = $AnimationPlayer
+	if dir == "right":
+		#anim.flip_h = false
+		if movement == 1:
+			anim.play("walk_right")
+		elif movement == 0:
+			if attack_in_progess == false:
+				anim.play("idle_right")
+	if dir == "left":
+		#anim.flip_h = true
+		if movement == 1:
+			anim.play("walk_left")
+		elif movement == 0:
+			if attack_in_progess == false:
+				anim.play("idle_left")
+	if dir == "up":
+		#anim.flip_h = false
+		if movement == 1:
+			anim.play("walk_up")
+		elif movement == 0:
+			if attack_in_progess == false:
+				anim.play("idle_up")
+	if dir == "down":
+		#anim.flip_h = true
+		if movement == 1:
+			anim.play("walk_down")
+		elif movement == 0:
+			if attack_in_progess == false:
+				anim.play("idle_down")
 
 func player():
 	# function for other classes to check if this is a player class
 	pass
 
 func _on_player_hitbox_body_entered(body):
-	#function to check if a enemy is in hitbox range
-	if body.has_method("enemy"): #check if it is a enemy
-		enemy_in_attack_range = true # set enemy in range to true
-	elif body.has_method("projectile"): #check if it is a projectile
-		projectile_hit = true # projectile hit 
+	if body.has_method("enemy"):
+		enemy_in_attack_range = true
+	elif body.has_method("projectile"):
+		projectile_hit = true
+
+func _on_player_hitbox_body_exited(body):
+	if body.has_method("enemy"):
+		enemy_in_attack_range = false
+	elif body.has_method("projectile"):
+		projectile_hit = false
+
+func enemy_attack(shot = false):
+	if (enemy_in_attack_range and enemy_attack_cooldown == true) or shot:
+		if !global_script.player_is_invincible:
+			global_script.player_health = global_script.player_health - 5;
+		enemy_attack_cooldown = false
+		$enemy_attackcooldown.start()
+
+func _on_enemy_attackcooldown_timeout():
+	enemy_attack_cooldown = true
 
 
-func _on_player_hitbox_body_exited(body): #function to update if object leaves hitbox
-	if body.has_method("enemy"): #check if it is a enemy
-		enemy_in_attack_range = false #set enemy in attack to false
-	elif body.has_method("projectile"): # check if it is a projectile
-		projectile_hit = false #set projectile hit to false
-
-func enemy_attack(shot = false): #deal with enemy attacks
-	if (enemy_in_attack_range and enemy_attack_cooldown == true) or shot: #if it is a enemy attack
-		if !global_script.player_is_invincible: #check if invincible 
-			global_script.player_health = global_script.player_health - 5; #decrease global_script.player_health
-		enemy_attack_cooldown = false #set cooldown to false
-		$enemy_attackcooldown.start() #start cooldown
-		#print("player taken damage\n")
-
-
-func _on_enemy_attackcooldown_timeout(): #function for cooldown
-	enemy_attack_cooldown = true #set to true
-
-
-func attack(): #attack fucntion
-	var dir = current_dir #set direction
-	if Input.is_action_just_pressed("attack"): #check for input
-		global_script.player_current_attack = true # set to true
-		attack_in_progess = true #set attack in progess to true
-		if dir == "right": #if direction is right
-			$AnimatedSprite2D.flip_h = false #dont flip sprite
-			$AnimatedSprite2D.play("side_attack") #play animation
-			$attack_timer.start() #start timer
-		elif dir == "left": #if direction is left
-			$AnimatedSprite2D.flip_h = true #flip sprite 
-			$AnimatedSprite2D.play("side_attack") #play animation 
-			$attack_timer.start() #start timer
-		elif dir == "up": #if direction is up
-			$AnimatedSprite2D.play("backward_attack") #play animation
-			$attack_timer.start() #start timer
-		elif dir == "down": #if direction is down
-			$AnimatedSprite2D.play("front_attack") #play animation
-			$attack_timer.start() #start timer
+func attack():
+	var dir = current_dir
+	if Input.is_action_just_pressed("attack"):
+		global_script.player_current_attack = true
+		attack_in_progess = true
+		attack_cooldown = true
+		attack_area.monitoring = true
+		attack_area.show()
+		match current_dir:
+			"right":
+				particles.global_position = position + Vector2(20,0)
+				particles.rotation_degrees = 0
+			"left":
+				particles.global_position = position + Vector2(-20, 0)
+				particles.rotation_degrees = 180
+			"up":
+				particles.global_position = position + Vector2(0, -20)
+				particles.rotation_degrees = -90
+			"down":
+				particles.global_position = position + Vector2(0, 20)
+				particles.rotation_degrees = 90
+				
+		
+		particles.emitting = true
+		await get_tree().create_timer(0.5).timeout
+		particles.emitting = false
+		particles.global_position = attack_area.global_position
+		
+		cool_down_timer.start(0.5)
 		
 		
 func wait_for(time: float): #set a timer
@@ -228,3 +253,18 @@ func _input(event): #check for inputs
 		print("Switched to weapon", current_weapon_index) #switch
 		#$WeaponLabel.text = "Weapon: " + str(current_weapon_index) 
 		#$WeaponSwitchSound.play()
+		
+func initialize_player():
+	body.texture = global_script.bodies_collection[global_script.selected_body]
+	body.modulate = global_script.selected_body_color
+	
+	hair.texture = global_script.hairs_collection[global_script.selected_hair]
+	hair.modulate = global_script.selected_hair_color
+	
+	outfit.texture = global_script.outfits_collection[global_script.selected_outfit]
+	outfit.modulate = global_script.selected_outfit_color
+	
+	accessory.texture = global_script.accessory_collections[global_script.selected_accessory]
+	accessory.modulate = global_script.selected_accessory_color
+	
+	name_label.text =  global_script.player_name

@@ -31,10 +31,65 @@ var best_floors = 0
 var best_time = 0
 var best_kills = 0
 
-func _process(delta) -> void: # function that runs the method to check for new high scores
-	check_for_new_high_scores()
+var bodies_collection = {
+	"01" : preload("res://art/body/char_a_p1_0bas_humn_v01.png")
+}
+var hairs_collection = {
+	"none" : null,
+	"01" : preload("res://art/hair/char_a_p1_4har_bob1_v01.png"),
+	"02" : preload("res://art/hair/char_a_p1_4har_dap1_v01.png")
+}
 
-		
+var outfits_collection = {
+	"01" : preload("res://art/outfit/char_a_p1_1out_boxr_v01.png"),
+	"02" : preload("res://art/outfit/char_a_p1_1out_fstr_v04.png"),
+	"03" : preload("res://art/outfit/char_a_p1_1out_pfpn_v04.png"),
+	"04" : preload("res://art/outfit/char_a_p1_1out_undi_v01.png"),
+	
+}
+
+var accessory_collections = {
+	"none" : null,
+	"01" : preload("res://art/accessories/char_a_p1_5hat_pfht_v04.png"),
+	"02" : preload("res://art/accessories/char_a_p1_5hat_pnty_v04.png"),
+}
+
+#skintones
+var body_color_options = [
+	Color(0.96,0.80, 0.69), # light
+	Color(0.72, 0.54,0.39), # medium
+	Color(0.45, 0.34, 0.27) # brown skin
+]
+
+var hair_color_options = [
+	Color(0.1,0.1, 0.1), # black
+	Color(0.4, 0.2,0.1), #brown
+	Color(0.9, 0.6, 0.2), #blonde
+	Color(0.5, 0.25, 0) #auburn
+]
+
+#outfit
+var color_options = [
+	Color(1, 1, 1), #default
+	Color(1, 0, 0), #red
+	Color(0, 1, 0), #green
+	Color(0, 0, 1), #blue
+	Color(0, 0, 0), #black
+	Color(1, 1, 1), #white
+]
+#selected values
+var selected_body = ""
+var selected_hair = ""
+var selected_outfit = ""
+var selected_accessory =""
+var selected_body_color = ""
+var selected_hair_color = ""
+var selected_outfit_color = ""
+var selected_accessory_color =""
+var player_name = ""
+
+func _process(delta) -> void:
+	check_for_new_high_scores()
 
 func check_for_new_high_scores(): # function that checks for new high scores
 	if player_xp > best_xp: # sets best_xp to player_xp if it is a new high
