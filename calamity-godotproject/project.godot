@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Calamity-GodotProject"
-run/main_scene="res://scenes/dungeon_generator.tscn"
+run/main_scene="res://scenes/Character_Creator.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 
 [autoload]
