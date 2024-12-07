@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=4 uid="uid://fvuh24om4h5y"]
+[gd_scene load_steps=20 format=4 uid="uid://fvuh24om4h5y"]
 
 [ext_resource type="Script" path="res://scripts/dungeon_generator.gd" id="1_vc0pt"]
 [ext_resource type="PackedScene" uid="uid://c7yisnsvlbei8" path="res://scenes/PR1.tscn" id="2_3kjpu"]
@@ -18,12 +18,15 @@
 [ext_resource type="TileSet" uid="uid://052wvnx2372h" path="res://tilesets/dungeon_tileset.tres" id="15_cgt0t"]
 [ext_resource type="Script" path="res://scripts/stat_display.gd" id="16_qitlb"]
 [ext_resource type="FontFile" uid="uid://dgklijjyt18vo" path="res://Godot-Fontpack-d244bf6170b399a6d4d26a0d906058ddf2dafdf1/fonts/kirifont/KiriFont.ttf" id="17_uw88n"]
+[ext_resource type="PackedScene" uid="uid://buxfdfikxl6br" path="res://scenes/pause_menu.tscn" id="20_28ujn"]
 
 [node name="DungeonGenerator" type="Node2D"]
+process_mode = 3
 script = ExtResource("1_vc0pt")
 room_scenes = [ExtResource("2_3kjpu"), ExtResource("3_wwpst"), ExtResource("4_87sco"), ExtResource("5_s571o"), ExtResource("6_kbodt"), ExtResource("7_d5eey"), ExtResource("8_8e82t"), ExtResource("9_sfhq4"), ExtResource("10_ov3yx"), ExtResource("10_oddol"), ExtResource("11_1hv85"), ExtResource("12_lb7t0"), ExtResource("13_8d73e"), ExtResource("14_p37cb")]
 
 [node name="DungeonBase" type="TileMapLayer" parent="."]
+process_mode = 3
 scale = Vector2(20, 20)
 tile_map_data = PackedByteArray("AAAAAAAAAAAFAAIAAAABAAAAAAAFAAIAAAACAAAAAAAFAAIAAAADAAAAAAAFAAIAAAAEAAAAAAAFAAIAAAAFAAAAAAAFAAIAAAAGAAAAAAAFAAIAAAAFAAEAAAAFAAIAAAAGAAEAAAAFAAIAAAAEAAEAAAAFAAIAAAADAAEAAAAFAAIAAAACAAEAAAAFAAIAAAABAAEAAAAFAAIAAAAAAAEAAAAFAAIAAAAAAAIAAAAFAAIAAAAAAAMAAAAFAAIAAAABAAMAAAAFAAIAAAACAAMAAAAFAAIAAAADAAMAAAAFAAIAAAADAAIAAAAFAAIAAAACAAIAAAAFAAIAAAABAAIAAAAFAAIAAAAEAAIAAAAFAAIAAAAEAAMAAAAFAAIAAAAFAAIAAAAFAAIAAAAFAAMAAAAFAAIAAAAGAAIAAAAFAAIAAAAGAAMAAAAFAAIAAAAEAAQAAAAFAAIAAAAEAAUAAAAFAAIAAAAFAAQAAAAFAAIAAAAFAAUAAAAFAAIAAAAGAAQAAAAFAAIAAAAGAAUAAAAFAAIAAAAEAAYAAAAFAAIAAAAFAAYAAAAFAAIAAAAGAAYAAAAFAAIAAAACAAUAAAAFAAIAAAACAAYAAAAFAAIAAAADAAUAAAAFAAIAAAADAAYAAAAFAAIAAAACAAQAAAAFAAIAAAADAAQAAAAFAAIAAAAAAAQAAAAFAAIAAAAAAAUAAAAFAAIAAAABAAQAAAAFAAIAAAABAAUAAAAFAAIAAAAAAAYAAAAFAAIAAAAAAAcAAAAFAAIAAAABAAYAAAAFAAIAAAABAAcAAAAFAAIAAAACAAcAAAAFAAIAAAADAAcAAAAFAAIAAAAEAAcAAAAFAAIAAAAFAAcAAAAFAAIAAAAGAAcAAAAFAAIAAAAHAAYAAAAFAAIAAAAHAAcAAAAFAAIAAAAIAAYAAAAFAAIAAAAIAAcAAAAFAAIAAAAHAAQAAAAFAAIAAAAHAAUAAAAFAAIAAAAIAAQAAAAFAAIAAAAIAAUAAAAFAAIAAAAHAAIAAAAFAAIAAAAHAAMAAAAFAAIAAAAIAAIAAAAFAAIAAAAIAAMAAAAFAAIAAAAHAAEAAAAFAAIAAAAIAAEAAAAFAAIAAAAHAAAAAAAFAAIAAAAIAAAAAAAFAAIAAAA=")
 tile_set = ExtResource("15_cgt0t")
@@ -102,3 +105,7 @@ offset_right = 192.0
 offset_bottom = 312.0
 theme_override_font_sizes/font_size = 30
 text = "Health:"
+
+[node name="CanvasLayer2" type="CanvasLayer" parent="."]
+
+[node name="PauseMenu" parent="CanvasLayer2" instance=ExtResource("20_28ujn")]
