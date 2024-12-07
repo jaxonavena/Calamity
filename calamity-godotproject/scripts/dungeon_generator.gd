@@ -17,6 +17,7 @@ var player = preload("res://scenes/player.tscn")
 var enemy = preload("res://scenes/enemy.tscn")
 var enemyglobin = preload("res://scenes/enemyglobin.tscn")
 
+
 var used_positions = {} # Tracks locations of rooms on the map
 var door_distance_offsets = {} # Tracks Vector2s of distances from each door in a room to the base location of the room
 var player_spawn_room_location: Vector2 # Track which room the player spawns in
@@ -57,12 +58,15 @@ func _ready():
 	
 func _process(delta):
 	# cmd+R or ctrl+R press to restart the scene
+	$CanvasLayer2/PauseMenu.visible = global_script.pause_game
 	if Input.is_action_pressed("restart_scene") and global_script.restart_allowed:
 		global_script.restarting = true
 		restart_scene()
-	
-	global_script.time_survived += delta #increment timer display
-	update_stats()
+	if Input.is_action_just_pressed("pause"):
+		global_script.pause_game = !global_script.pause_game
+	if !global_script.pause_game:
+		global_script.time_survived += delta #increment timer display
+		update_stats()
 	if global_script.restarting == false: # Avoids NULL PARAMETER ERROR when restarting
 		update_mouse_pos()
 	
@@ -481,3 +485,19 @@ func find_debug_labels():
 func update_mouse_pos():
 	# Update the mouse position display
 	mouse_pos_label.text = "Coords: " + str(get_global_mouse_position())
+	
+
+#signal toggle_game_paused(is_paused : bool)
+#
+#var game_paused: bool = false:
+	#get:
+		#return game_paused
+	#set(value):
+		#game_paused = value
+		#get_tree().paused = game_paused
+		#
+		#emit_signal("toggle_game_paused", game_paused)
+
+#func _input(event: InputEvent):
+	#if event.is_action_pressed("ui_cancel"):
+		#game_paused = !game_paused

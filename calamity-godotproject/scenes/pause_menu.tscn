@@ -1,0 +1,72 @@
+[gd_scene load_steps=6 format=3 uid="uid://py7x4dbu30nx"]
+
+[ext_resource type="Script" path="res://scripts/pause_menu.gd" id="1_rrru0"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_4qm6x"]
+font_size = 72
+
+[sub_resource type="Theme" id="Theme_15akf"]
+default_font_size = 40
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_vrp68"]
+
+[sub_resource type="Theme" id="Theme_q7sjm"]
+default_font_size = 40
+
+[node name="PauseMenu" type="Control"]
+process_mode = 2
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_rrru0")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -514.5
+offset_top = -319.5
+offset_right = 514.5
+offset_bottom = 319.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = 861.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="Panel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+text = "= Pause ="
+label_settings = SubResource("LabelSettings_4qm6x")
+horizontal_alignment = 1
+
+[node name="Resume" type="Button" parent="Panel/VBoxContainer"]
+custom_minimum_size = Vector2(400, 150)
+layout_mode = 2
+size_flags_horizontal = 4
+theme = SubResource("Theme_15akf")
+text = "Resume"
+icon = SubResource("ViewportTexture_vrp68")
+
+[node name="Quit" type="Button" parent="Panel/VBoxContainer"]
+custom_minimum_size = Vector2(400, 150)
+layout_mode = 2
+size_flags_horizontal = 4
+theme = SubResource("Theme_q7sjm")
+text = "Quit"
+
+[connection signal="pressed" from="Panel/VBoxContainer/Resume" to="." method="_on_resume_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/Quit" to="." method="_on_quit_pressed"]

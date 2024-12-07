@@ -23,26 +23,27 @@ var player_in_attack_zone = false # set enemy to no tbe in the player's attack z
 @onready var death_effect = $DeathEffect # set the variable that triggers a death effect
 
 func _physics_process(delta): # declare the physics process function
-	deal_with_damage() # declare the function that applies damage when an attack is made
-	
-	if player_chase: # if player_chase is true, then have the goblin chase after the player to a location rrandomly generated near the player
-		var salt = generate_random_offset(50, 50)
-		position += ((player.position + salt) - position )/speed 
-		$AnimatedSprite2D.play("globin run") # play the goblin run animation
+	if !global_script.pause_game:
+		deal_with_damage() # declare the function that applies damage when an attack is made
 		
-		if (player.position.x - position.x)< 0: # if the player is on the left of the goblin, then have the goblin face left
-			$AnimatedSprite2D.flip_h = true
-		else: # have the goblin face right if the player is on the right
-			$AnimatedSprite2D.flip_h = false
-		
-		if can_shoot: # if can_shoot is true, then shoot at the player and start a timer before being able to shoot again
-			shoot_projectile(player)
-			can_shoot = false
-			$projectile_timer.start()
-	else: # else activate the idle goblin animation
-		$AnimatedSprite2D.play("globin idle")
-		
-	move_and_slide() # allows the CharacterBody2D to move with physics on surfaces
+		if player_chase: # if player_chase is true, then have the goblin chase after the player to a location rrandomly generated near the player
+			var salt = generate_random_offset(50, 50)
+			position += ((player.position + salt) - position )/speed 
+			$AnimatedSprite2D.play("globin run") # play the goblin run animation
+			
+			if (player.position.x - position.x)< 0: # if the player is on the left of the goblin, then have the goblin face left
+				$AnimatedSprite2D.flip_h = true
+			else: # have the goblin face right if the player is on the right
+				$AnimatedSprite2D.flip_h = false
+			
+			if can_shoot: # if can_shoot is true, then shoot at the player and start a timer before being able to shoot again
+				shoot_projectile(player)
+				can_shoot = false
+				$projectile_timer.start()
+		else: # else activate the idle goblin animation
+			$AnimatedSprite2D.play("globin idle")
+			
+		move_and_slide() # allows the CharacterBody2D to move with physics on surfaces
 # Function to shoot a projectile
 func shoot_projectile(body): # creates an instance of a projectile and shoots it
 	

@@ -22,20 +22,21 @@ var player_in_attack_zone = false # set the enemy in the attack zone to false
 @onready var death_effect = $DeathEffect # sets the variable to trigger death when the health is gone
 
 func _physics_process(delta): # declare the physics process function
-	deal_with_damage() # declare the function that applies damage when an attack is made
-	
-	# if the player_chase var is true, then the enemy chases the player at a location near them that is randomly generated
-	if player_chase:
-		var salt = generate_random_offset(50, 50) 
-		position += ((player.position + salt) - position )/speed 
-		$AnimatedSprite2D.play("slime run") # play the animation that makes the slime enemy run
+	if !global_script.pause_game:
+		deal_with_damage() # declare the function that applies damage when an attack is made
 		
-		if (player.position.x - position.x)< 0:
-			$AnimatedSprite2D.flip_h = true # makes the slime character face left when the player us left of them
+		# if the player_chase var is true, then the enemy chases the player at a location near them that is randomly generated
+		if player_chase:
+			var salt = generate_random_offset(50, 50) 
+			position += ((player.position + salt) - position )/speed 
+			$AnimatedSprite2D.play("slime run") # play the animation that makes the slime enemy run
+			
+			if (player.position.x - position.x)< 0:
+				$AnimatedSprite2D.flip_h = true # makes the slime character face left when the player us left of them
+			else:
+				$AnimatedSprite2D.flip_h = false # has the default false so the slime faces right
 		else:
-			$AnimatedSprite2D.flip_h = false # has the default false so the slime faces right
-	else:
-		$AnimatedSprite2D.play("slime idle") # plays the idle animation when the slime isn't chasing the player
+			$AnimatedSprite2D.play("slime idle") # plays the idle animation when the slime isn't chasing the player
 
 	move_and_slide() # allows the CharacterBody2D to move with physics on surfaces
 func generate_random_offset(x_range: float, y_range: float) -> Vector2: # function that randomly positions enemies on the map

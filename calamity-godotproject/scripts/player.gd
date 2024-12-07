@@ -47,13 +47,14 @@ var projectile1 = weapons[current_weapon_index] #default weapon
 
 func _process(delta):
 	# Shoot projectile when the player presses the shoot button
-	if Input.is_action_pressed("shoot") and can_shoot:
-		shoot_projectile() #run shoot function
-		can_shoot = false #set ability to shoot to false for cooldown
-		# Wait for the next shot
-		await wait_for(0.2) 
-	
-		can_shoot = true #set it back to true after cooldown
+	if !global_script.pause_game:
+		if Input.is_action_pressed("shoot") and can_shoot:
+			shoot_projectile() #run shoot function
+			can_shoot = false #set ability to shoot to false for cooldown
+			# Wait for the next shot
+			await wait_for(0.2) 
+		
+			can_shoot = true #set it back to true after cooldown
 
 		
 # Function to shoot a projectile
@@ -75,21 +76,22 @@ func _ready():
 	$AnimatedSprite2D.play("front_idle")  #set idle animation
 
 func _physics_process(delta):
-	player_movement(delta) # set movement funciton to run
-	enemy_attack() # run the enemy attack function
-	attack() #run the attack function
+	if !global_script.pause_game:
+		player_movement(delta) # set movement funciton to run
+		enemy_attack() # run the enemy attack function
+		attack() #run the attack function
 	
-	if health <= 0: #check if player is alive
-		player_alive = false #set to false if player dies
-		#add death functionality here
-		health = 0 #set health to 0 
-		$AnimatedSprite2D.play("death") #play death animation
-		print("player is dead") #print 
-		global_script.player_instance = null #erase player
-		get_tree().change_scene_to_file("res://scenes/main_menu.tscn") #change scene
+		if health <= 0: #check if player is alive
+			player_alive = false #set to false if player dies
+			#add death functionality here
+			health = 0 #set health to 0 
+			$AnimatedSprite2D.play("death") #play death animation
+			print("player is dead") #print 
+			global_script.player_instance = null #erase player
+			get_tree().change_scene_to_file("res://scenes/main_menu.tscn") #change scene
 	
-	elif Input.is_action_just_pressed("toggle_camera"): #check toggle
-		$Camera2D.enabled = not $Camera2D.enabled # Press CMD+C to toggle the playe cam
+		elif Input.is_action_just_pressed("toggle_camera"): #check toggle
+			$Camera2D.enabled = not $Camera2D.enabled # Press CMD+C to toggle the playe cam
 		
 func player_movement(delta): # movement function
 	if Input.is_action_pressed("ui_right") or Input.is_key_pressed(KEY_D): #right arrow pressed

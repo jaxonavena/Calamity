@@ -8,12 +8,14 @@ Postconditions: Outputs the player score for that round and the high scores if t
 Faults: 
 '''
 extends Node # the script is a Node class and set to behave like a basic node
+
+var pause_game = false
 # PLAYER FLAGS SET TO DEFAULT BOOLS
 var player_current_attack = false
 var player_can_use_stairs = false
 var player_is_invincible = false
 var restart_allowed = true
-	
+
 # PLAYER STATS SET TO DEFAULT
 var player_coins = 0
 var player_xp = 0
@@ -29,6 +31,8 @@ var best_kills = 0
 
 func _process(delta) -> void: # function that runs the method to check for new high scores
 	check_for_new_high_scores()
+
+		
 
 func check_for_new_high_scores(): # function that checks for new high scores
 	if player_xp > best_xp: # sets best_xp to player_xp if it is a new high
@@ -67,3 +71,12 @@ func new_floor(): # function that creats a new floor and keeps track of the amou
 	floors += 1 # increases the floor count for the current game by 1
 	previous_floor.remove_child(player_instance) # removes the player from the previous floor
 	get_tree().change_scene_to_file("res://scenes/dungeon_generator.tscn") # generats a new random scene to use
+
+
+
+
+			
+		
+		
+
+	
