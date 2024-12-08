@@ -1,4 +1,4 @@
-[gd_scene load_steps=78 format=3 uid="uid://blffjs0lwjxe0"]
+[gd_scene load_steps=80 format=3 uid="uid://blffjs0lwjxe0"]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_d64db"]
 [ext_resource type="Texture2D" uid="uid://266tydyydbie" path="res://art/characters/player.png" id="2_y4q85"]
@@ -7,6 +7,8 @@
 [ext_resource type="Texture2D" uid="uid://b0xun5rcnfovr" path="res://art/outfit/char_a_p1_1out_boxr_v01.png" id="5_hu0ng"]
 [ext_resource type="Texture2D" uid="uid://7rd0x02oxatk" path="res://art/accessories/char_a_p1_5hat_pfht_v04.png" id="6_iiggx"]
 [ext_resource type="Texture2D" uid="uid://dp3gxm2scrcxs" path="res://art/effects (new)/slash_effect_anim_f1.png" id="7_bslmm"]
+[ext_resource type="AudioStream" uid="uid://b10wort801t0g" path="res://art/sounds/punch-body-hit-joshua-chivers-2-2-00-00 (online-audio-converter.com).wav" id="8_kfqu1"]
+[ext_resource type="AudioStream" uid="uid://bq1cnekqoft2k" path="res://art/sounds/mixkit-quick-knife-slice-cutting-2152.wav" id="9_fhiyt"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_vm5is"]
 atlas = ExtResource("2_y4q85")
@@ -1030,6 +1032,12 @@ process_material = SubResource("ParticleProcessMaterial_8rkqb")
 texture = ExtResource("7_bslmm")
 one_shot = true
 local_coords = true
+
+[node name="HitSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("8_kfqu1")
+
+[node name="SliceSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("9_fhiyt")
 
 [connection signal="body_entered" from="player_hitbox" to="." method="_on_player_hitbox_body_entered"]
 [connection signal="body_exited" from="player_hitbox" to="." method="_on_player_hitbox_body_exited"]

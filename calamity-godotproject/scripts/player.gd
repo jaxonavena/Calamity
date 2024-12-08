@@ -192,6 +192,7 @@ func enemy_attack(shot = false):
 	if (enemy_in_attack_range and enemy_attack_cooldown == true) or shot:
 		if !global_script.player_is_invincible:
 			global_script.player_health = global_script.player_health - 5;
+			$HitSound.play()
 		enemy_attack_cooldown = false
 		$enemy_attackcooldown.start()
 
@@ -223,6 +224,7 @@ func attack():
 				
 		
 		particles.emitting = true
+		$SliceSound.play()
 		await get_tree().create_timer(0.5).timeout
 		particles.emitting = false
 		particles.global_position = attack_area.global_position

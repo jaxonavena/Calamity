@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://b4lj84cdv187w"
+path="res://.godot/imported/punch-body-hit-joshua-chivers-2-2-00-00 (online-audio-converter.com).wav-49e200e6b0425d91ad61c24af9e16c44.sample"
+
+[deps]
+
+source_file="res://art/punch-body-hit-joshua-chivers-2-2-00-00 (online-audio-converter.com).wav"
+dest_files=["res://.godot/imported/punch-body-hit-joshua-chivers-2-2-00-00 (online-audio-converter.com).wav-49e200e6b0425d91ad61c24af9e16c44.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0
