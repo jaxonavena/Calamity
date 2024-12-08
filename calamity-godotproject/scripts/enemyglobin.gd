@@ -95,6 +95,7 @@ func _on_enemy_hitbox_body_exited(body): # if the enemy exits the hitbox area of
 func deal_with_damage(shot = false): # function to handle if the enemy takes damage
 	if (player_in_attack_zone and global_script.player_current_attack == true) or shot: # if the enemy is in the hitbox, and the player attacks or the enemy is shot, then remove 10 health and create a little buffer on the attacks
 		health = health - 10
+		$HitSound.play()
 		hit_effect.emitting = true
 		await get_tree().create_timer(0.5).timeout
 		hit_effect.emitting = false
@@ -103,6 +104,7 @@ func deal_with_damage(shot = false): # function to handle if the enemy takes dam
 		
 func die(): # function to handle a goblin death
 	death_effect.emitting = true # activate the death effect then wait a little to drop items and update player XP
+	$DieEffect.play()
 	await get_tree().create_timer(0.2).timeout
 	drop_items()
 	update_player_xp()

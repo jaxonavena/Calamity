@@ -1,7 +1,9 @@
-[gd_scene load_steps=23 format=3 uid="uid://bmjsqsvb6225k"]
+[gd_scene load_steps=25 format=3 uid="uid://bmjsqsvb6225k"]
 
 [ext_resource type="Script" path="res://scripts/enemy.gd" id="1_os78v"]
 [ext_resource type="Texture2D" uid="uid://b6r6rij8p5bkb" path="res://art/characters/slime.png" id="2_72v0q"]
+[ext_resource type="AudioStream" uid="uid://b10wort801t0g" path="res://art/sounds/punch-body-hit-joshua-chivers-2-2-00-00 (online-audio-converter.com).wav" id="3_wdkcq"]
+[ext_resource type="AudioStream" uid="uid://dgm05rge21gdk" path="res://art/sounds/mixkit-gore-video-game-blood-splash-263.wav" id="4_xr8rf"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_vbrrs"]
 atlas = ExtResource("2_72v0q")
@@ -171,6 +173,12 @@ process_material = SubResource("ParticleProcessMaterial_e1fs2")
 lifetime = 0.8
 one_shot = true
 explosiveness = 1.0
+
+[node name="HitSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_wdkcq")
+
+[node name="DieEffect" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_xr8rf")
 
 [connection signal="body_entered" from="detection_area" to="." method="_on_detection_area_body_entered"]
 [connection signal="body_exited" from="detection_area" to="." method="_on_detection_area_body_exited"]

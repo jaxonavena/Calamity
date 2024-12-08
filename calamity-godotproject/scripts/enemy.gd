@@ -73,6 +73,7 @@ func _on_enemy_hitbox_body_exited(body): # notifies that the player is not in th
 func deal_with_damage(shot = false): # function to handle if an emey takes damage
 	if (player_in_attack_zone and global_script.player_current_attack == true) or shot: # if the enemy is close enough to the player, and the player attacks, then take damage with a little buffer time for the effect
 		health = health - 10
+		$HitSound.play()
 		hit_effect.emitting = true
 		await get_tree().create_timer(0.5).timeout
 		hit_effect.emitting = false
@@ -82,6 +83,7 @@ func deal_with_damage(shot = false): # function to handle if an emey takes damag
 		
 func die(): # function for the enemy to die
 	death_effect.emitting = true # activates the death animation
+	$DieEffect.play()
 	await get_tree().create_timer(0.2).timeout # briefly buffers the execution
 	drop_items() # drop the items that should come from the enemy
 	update_player_xp() # increse the user's XP
