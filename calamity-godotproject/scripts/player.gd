@@ -26,7 +26,7 @@ extends CharacterBody2D
 
 
 # Player stuff
-const speed = 120	
+var speed = 120	
 var current_dir = "down"
 var enemy_in_attack_range = false
 var enemy_attack_cooldown = true
@@ -34,6 +34,7 @@ var player_alive = true
 var attack_in_progess = false
 var projectile_hit = false
 var attack_cooldown = false 
+var dash_cooldown = true
 
 @onready var body = $Skeleton/Body
 @onready var hair = $Skeleton/Hair
@@ -91,6 +92,8 @@ func _ready():
 
 func _physics_process(delta):
 	if !global_script.pause_game:
+		if Input.is_action_just_pressed("dash") and dash_cooldown:
+			dash()
 		player_movement()
 		enemy_attack()
 		attack()
@@ -176,6 +179,11 @@ func play_animation(movement):
 func player():
 	# function for other classes to check if this is a player class
 	pass
+	
+func dash():
+	speed = speed*4
+	$Dashduration.start()
+	$DashCooldown.start()
 
 func _on_player_hitbox_body_entered(body):
 	if body.has_method("enemy"):
@@ -268,3 +276,14 @@ func initialize_player():
 	accessory.modulate = global_script.selected_accessory_color
 	
 	name_label.text =  global_script.player_name
+
+
+
+
+func _on_dashduration_timeout() -> void:
+	speed = 120
+	dash_cooldown = false
+
+
+func _on_dash_cooldown_timeout() -> void:
+	dash_cooldown = true
