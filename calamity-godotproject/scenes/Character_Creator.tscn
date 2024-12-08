@@ -1,12 +1,12 @@
 [gd_scene load_steps=10 format=3 uid="uid://rbf7b58e3qc4"]
 
-[ext_resource type="Texture2D" uid="uid://ddt18x30kjjmp" path="res://Godot-Fontpack-d244bf6170b399a6d4d26a0d906058ddf2dafdf1/fonts/Assets 4/body/char_a_p1_0bas_humn_v01.png" id="1_clu5r"]
+[ext_resource type="Texture2D" uid="uid://ddt18x30kjjmp" path="res://art/body/char_a_p1_0bas_humn_v01.png" id="1_clu5r"]
 [ext_resource type="Script" path="res://scripts/character_creator.gd" id="1_gs0et"]
-[ext_resource type="Texture2D" uid="uid://dpg70eiwafm8x" path="res://Godot-Fontpack-d244bf6170b399a6d4d26a0d906058ddf2dafdf1/fonts/Assets 4/hair/char_a_p1_4har_bob1_v01.png" id="2_07trh"]
+[ext_resource type="Texture2D" uid="uid://dpg70eiwafm8x" path="res://art/hair/char_a_p1_4har_bob1_v01.png" id="2_07trh"]
 [ext_resource type="Script" path="res://scripts/body.gd" id="2_ks7au"]
-[ext_resource type="Texture2D" uid="uid://b0xun5rcnfovr" path="res://Godot-Fontpack-d244bf6170b399a6d4d26a0d906058ddf2dafdf1/fonts/Assets 4/outfit/char_a_p1_1out_boxr_v01.png" id="3_5077u"]
+[ext_resource type="Texture2D" uid="uid://b0xun5rcnfovr" path="res://art/outfit/char_a_p1_1out_boxr_v01.png" id="3_5077u"]
 [ext_resource type="Script" path="res://scripts/hair.gd" id="4_in7pi"]
-[ext_resource type="Texture2D" uid="uid://7rd0x02oxatk" path="res://Godot-Fontpack-d244bf6170b399a6d4d26a0d906058ddf2dafdf1/fonts/Assets 4/accessories/char_a_p1_5hat_pfht_v04.png" id="4_n3u0l"]
+[ext_resource type="Texture2D" uid="uid://7rd0x02oxatk" path="res://art/accessories/char_a_p1_5hat_pfht_v04.png" id="4_n3u0l"]
 [ext_resource type="Script" path="res://scripts/outfit.gd" id="6_pt14n"]
 [ext_resource type="Script" path="res://scripts/accessory.gd" id="8_puxo0"]
 

@@ -2,10 +2,10 @@
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_d64db"]
 [ext_resource type="Texture2D" uid="uid://266tydyydbie" path="res://art/characters/player.png" id="2_y4q85"]
-[ext_resource type="Texture2D" uid="uid://ddt18x30kjjmp" path="res://Godot-Fontpack-d244bf6170b399a6d4d26a0d906058ddf2dafdf1/fonts/Assets 4/body/char_a_p1_0bas_humn_v01.png" id="3_0xlvr"]
-[ext_resource type="Texture2D" uid="uid://dpg70eiwafm8x" path="res://Godot-Fontpack-d244bf6170b399a6d4d26a0d906058ddf2dafdf1/fonts/Assets 4/hair/char_a_p1_4har_bob1_v01.png" id="4_atut4"]
-[ext_resource type="Texture2D" uid="uid://b0xun5rcnfovr" path="res://Godot-Fontpack-d244bf6170b399a6d4d26a0d906058ddf2dafdf1/fonts/Assets 4/outfit/char_a_p1_1out_boxr_v01.png" id="5_hu0ng"]
-[ext_resource type="Texture2D" uid="uid://7rd0x02oxatk" path="res://Godot-Fontpack-d244bf6170b399a6d4d26a0d906058ddf2dafdf1/fonts/Assets 4/accessories/char_a_p1_5hat_pfht_v04.png" id="6_iiggx"]
+[ext_resource type="Texture2D" uid="uid://ddt18x30kjjmp" path="res://art/body/char_a_p1_0bas_humn_v01.png" id="3_0xlvr"]
+[ext_resource type="Texture2D" uid="uid://dpg70eiwafm8x" path="res://art/hair/char_a_p1_4har_bob1_v01.png" id="4_atut4"]
+[ext_resource type="Texture2D" uid="uid://b0xun5rcnfovr" path="res://art/outfit/char_a_p1_1out_boxr_v01.png" id="5_hu0ng"]
+[ext_resource type="Texture2D" uid="uid://7rd0x02oxatk" path="res://art/accessories/char_a_p1_5hat_pfht_v04.png" id="6_iiggx"]
 [ext_resource type="Texture2D" uid="uid://dp3gxm2scrcxs" path="res://art/effects (new)/slash_effect_anim_f1.png" id="7_bslmm"]
 [ext_resource type="AudioStream" uid="uid://b10wort801t0g" path="res://art/sounds/punch-body-hit-joshua-chivers-2-2-00-00 (online-audio-converter.com).wav" id="8_kfqu1"]
 [ext_resource type="AudioStream" uid="uid://bq1cnekqoft2k" path="res://art/sounds/mixkit-quick-knife-slice-cutting-2152.wav" id="9_fhiyt"]
@@ -947,6 +947,7 @@ scale_max = 9.64
 scale_curve = SubResource("CurveXYZTexture_wg224")
 
 [node name="Player" type="CharacterBody2D"]
+process_mode = 1
 y_sort_enabled = true
 position = Vector2(0, -1)
 collision_layer = 3

@@ -21,7 +21,7 @@
 [ext_resource type="PackedScene" uid="uid://dmcdsfapb015f" path="res://scenes/pause_menu.tscn" id="20_28ujn"]
 
 [node name="DungeonGenerator" type="Node2D"]
-process_mode = 3
+process_mode = 1
 script = ExtResource("1_vc0pt")
 room_scenes = [ExtResource("2_3kjpu"), ExtResource("3_wwpst"), ExtResource("4_87sco"), ExtResource("5_s571o"), ExtResource("6_kbodt"), ExtResource("7_d5eey"), ExtResource("8_8e82t"), ExtResource("9_sfhq4"), ExtResource("10_ov3yx"), ExtResource("10_oddol"), ExtResource("11_1hv85"), ExtResource("12_lb7t0"), ExtResource("13_8d73e"), ExtResource("14_p37cb")]
 
