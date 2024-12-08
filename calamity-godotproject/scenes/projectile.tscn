@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://cy4xx1hlip17m"]
 
 [ext_resource type="Script" path="res://scripts/projectile.gd" id="1_bghdu"]
-[ext_resource type="Texture2D" uid="uid://d1wva6w4iw2g3" path="res://art/props_itens/bomb_anim_f0.png" id="1_em8n3"]
+[ext_resource type="Texture2D" uid="uid://b0jkv0nao7obk" path="res://art/effects (new)/explosion_anim_f0.png" id="2_mig4h"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_lpoks"]
 radius = 4.0
@@ -24,9 +24,8 @@ color_ramp = SubResource("GradientTexture1D_whpwt")
 script = ExtResource("1_bghdu")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(0, -1.5)
-scale = Vector2(1, 0.9375)
-texture = ExtResource("1_em8n3")
+scale = Vector2(0.3125, 0.304688)
+texture = ExtResource("2_mig4h")
 
 [node name="Area2D" type="Area2D" parent="."]
 

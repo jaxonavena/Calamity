@@ -106,6 +106,17 @@ offset_bottom = 312.0
 theme_override_font_sizes/font_size = 30
 text = "Health:"
 
+[node name="Ammo" type="Label" parent="CanvasLayer/StatDisplay"]
+layout_mode = 0
+offset_left = 67.0
+offset_top = 344.0
+offset_right = 195.0
+offset_bottom = 392.0
+theme_override_font_sizes/font_size = 30
+text = "Ammo:"
+
 [node name="CanvasLayer2" type="CanvasLayer" parent="."]
 
 [node name="PauseMenu" parent="CanvasLayer2" instance=ExtResource("20_28ujn")]
+offset_top = 64.0
+offset_bottom = 64.0
