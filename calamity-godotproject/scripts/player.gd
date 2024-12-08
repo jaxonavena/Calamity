@@ -44,19 +44,6 @@ var attack_cooldown = false
 @onready var particles = $AttackParticle
 @onready var cool_down_timer = $attack_timer
 
-<<<<<<< HEAD
-=======
-const speed = 120	#speed of player movement
-var current_dir = "down" #Starting player direction
-var enemy_in_attack_range = false #Enemy hit range boolean
-var enemy_attack_cooldown = true  # enemy attack cooldown for hits
-var health = 250 #player health
-var player_alive = true #boolean for if player is alive
-var attack_in_progess = false  # if player is attacking 
-var projectile_hit = false #if projectile hit 
-var attack_cooldown = false
-
->>>>>>> fix stuff
 # Ranged weapon stuff
 @export var fire_rate: float = 0.5  # Time between shots
 var projectile = preload("res://scenes/projectile.tscn") #preloading the projectile scene so it can be used
@@ -100,42 +87,22 @@ func _ready():
 	#attacks
 	attack_area.monitoring = false
 	attack_area.hide()
-<<<<<<< HEAD
 
-func _physics_process(delta):
-	if !global_script.pause_game:
-		player_movement(delta) # set movement funciton to run
-		enemy_attack() # run the enemy attack function
-		attack() #run the attack function
-	
-		if global_script.player_health <= 0: #check if player is alive
-			player_alive = false #set to false if player dies
-			#add death functionality here
-			global_script.player_health = 0 #set global_script.player_health to 0 
-			print("player is dead") #print 
-			global_script.player_instance = null #erase player
-			get_tree().change_scene_to_file("res://scenes/main_menu.tscn") #change scene
-=======
-	
 func _physics_process(delta):
 	if !global_script.pause_game:
 		player_movement()
 		enemy_attack()
 		attack()
-	if health <= 0:
+	if global_script.player_health <= 0:
 		player_alive = false
-		health = 0
+		global_script.player_health = 0
 		print("player is dead")
 		global_script.player_instance = null
 		get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 	elif Input.is_action_just_pressed("toggle_camera"): #check toggle
-			$Camera2D.enabled = not $Camera2D.enabled # Press CMD+C to toggle the playe cam
->>>>>>> fix stuff
-
-		elif Input.is_action_just_pressed("toggle_camera"): #check toggle
-			$Camera2D.enabled = not $Camera2D.enabled # Press CMD+C to toggle the playe cam
+		$Camera2D.enabled = not $Camera2D.enabled # Press CMD+C to toggle the playe cam
 		
-func player_movement(delta): # movement function
+func player_movement(): # movement function
 	if Input.is_action_pressed("ui_right") or Input.is_key_pressed(KEY_D): #right arrow pressed
 		current_dir = "right" #set direction
 		play_animation(1) #play animation
