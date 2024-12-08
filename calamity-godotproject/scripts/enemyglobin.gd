@@ -17,6 +17,7 @@ var can_shoot = true # allow the enemy to shoot
 @export var fire_rate: float = 0.5  # Time between shots
 var projectile = preload("res://scenes/projectile.tscn") # import the projectile scene
 var coin_bag = preload("res://scenes/item_drop.tscn") # import the coin bag scene
+var ammo = preload("res://scenes/ammo.tscn")
 var health = 30 # set goblin health to 30
 var player_in_attack_zone = false # set enemy to no tbe in the player's attack zone
 @onready var hit_effect = $HitEffect # set the variable that triggers a hit effect
@@ -111,6 +112,8 @@ func drop_items():
 	var num = randi_range(0, 10)
 	if num > 2: # Chance to drop coins
 		place_item(coin_bag)
+		if num > 4:
+			place_item(ammo)
 		
 func place_item(item):
 	var item_instance = item.instantiate()

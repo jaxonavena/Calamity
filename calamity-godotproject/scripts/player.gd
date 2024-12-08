@@ -57,11 +57,12 @@ var projectile1 = weapons[current_weapon_index] #default weapon
 func _process(delta):
 	# Shoot projectile when the player presses the shoot button
 	if !global_script.pause_game:
-		if Input.is_action_pressed("shoot") and can_shoot:
+		if Input.is_action_pressed("shoot") and can_shoot and global_script.player_ammo > 0:
 			shoot_projectile() #run shoot function
 			can_shoot = false #set ability to shoot to false for cooldown
 			# Wait for the next shot
 			await wait_for(0.2) 
+			global_script.player_ammo -= 1
 		
 			can_shoot = true #set it back to true after cooldown
 

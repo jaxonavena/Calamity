@@ -20,6 +20,7 @@ var no_path_to_stairs = false
 # PLAYER STATS SET TO DEFAULT
 var player_health = 250
 var player_coins = 0
+var player_ammo = 50
 var player_xp = 0
 var floors = 1
 var time_survived = 0.0
