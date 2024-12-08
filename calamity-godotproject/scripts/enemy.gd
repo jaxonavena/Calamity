@@ -24,7 +24,7 @@ var player_in_attack_zone = false # set the enemy in the attack zone to false
 func _physics_process(delta): # declare the physics process function
 	if !global_script.pause_game:
 		deal_with_damage() # declare the function that applies damage when an attack is made
-		
+		update_health()
 		# if the player_chase var is true, then the enemy chases the player at a location near them that is randomly generated
 		if player_chase:
 			var salt = generate_random_offset(50, 50) 
@@ -110,3 +110,7 @@ func update_player_xp(): # function to update the player's XP
 
 func _on_projectile_timer_timeout() -> void:
 	pass # Replace with function body.
+
+func update_health():
+	var healthbar = $HealthBar
+	healthbar.value = health
