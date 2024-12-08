@@ -4,10 +4,10 @@
 [ext_resource type="Texture2D" uid="uid://c0f531kq8nbna" path="res://art/full tilemap.png" id="1_pjx2r"]
 [ext_resource type="PackedScene" uid="uid://blffjs0lwjxe0" path="res://scenes/player.tscn" id="2_0i0bd"]
 [ext_resource type="PackedScene" uid="uid://bmjsqsvb6225k" path="res://scenes/enemy.tscn" id="3_balui"]
-[ext_resource type="PackedScene" uid="uid://b0y666ub8mdh5" path="res://scenes/enemyglobin.tscn" id="5_kijxy"]
+[ext_resource type="PackedScene" uid="uid://cuct8p78s0u5u" path="res://scenes/enemyglobin.tscn" id="5_kijxy"]
 [ext_resource type="PackedScene" uid="uid://cy4xx1hlip17m" path="res://scenes/projectile.tscn" id="6_t56a7"]
 [ext_resource type="PackedScene" uid="uid://cx403i58w3og5" path="res://scenes/audio.tscn" id="7_c2nx7"]
-[ext_resource type="PackedScene" uid="uid://dmcdsfapb015f" path="res://scenes/pause_menu.tscn" id="7_qtgcx"]
+[ext_resource type="PackedScene" uid="uid://py7x4dbu30nx" path="res://scenes/pause_menu.tscn" id="7_qtgcx"]
 [ext_resource type="Script" path="res://scripts/pause_menu.gd" id="7_rehpu"]
 [ext_resource type="PackedScene" uid="uid://fvuh24om4h5y" path="res://scenes/dungeon_generator.tscn" id="8_qawty"]
 

@@ -26,7 +26,7 @@ var player_in_attack_zone = false # set enemy to no tbe in the player's attack z
 func _physics_process(delta): # declare the physics process function
 	if !global_script.pause_game:
 		deal_with_damage() # declare the function that applies damage when an attack is made
-		
+		update_health()
 		if player_chase: # if player_chase is true, then have the goblin chase after the player to a location rrandomly generated near the player
 			var salt = generate_random_offset(50, 50)
 			position += ((player.position + salt) - position )/speed 
@@ -129,3 +129,7 @@ func update_player_xp(): # function to update the player's XP
 
 func _on_projectile_timer_timeout() -> void: # once the timer expires, then the goblin is allowed to shoot again
 	can_shoot = true
+
+func update_health():
+	var healthbar = $HealthBar
+	healthbar.value = health
