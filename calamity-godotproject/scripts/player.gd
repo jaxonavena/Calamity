@@ -92,7 +92,7 @@ func _ready():
 
 func _physics_process(delta):
 	if !global_script.pause_game:
-		if Input.is_action_just_pressed("dash") and dash_cooldown:
+		if Input.is_action_just_pressed("dash") and global_script.dash_available:
 			dash()
 		player_movement()
 		enemy_attack()
@@ -184,6 +184,7 @@ func dash():
 	speed = speed*4
 	$Dashduration.start()
 	$DashCooldown.start()
+	global_script.dash_available = false
 
 func _on_player_hitbox_body_entered(body):
 	if body.has_method("enemy"):
@@ -282,8 +283,8 @@ func initialize_player():
 
 func _on_dashduration_timeout() -> void:
 	speed = 120
-	dash_cooldown = false
+	
 
 
 func _on_dash_cooldown_timeout() -> void:
-	dash_cooldown = true
+	global_script.dash_available = true
