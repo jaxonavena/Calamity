@@ -91,8 +91,9 @@ func _ready():
 	attack_area.hide()
 
 func _physics_process(delta):
-	if !global_script.pause_game:
+	if !global_script.pause_game: #check if game is paused
 		if Input.is_action_just_pressed("dash") and global_script.dash_available:
+			#if user uses the dash ability
 			dash()
 		player_movement()
 		enemy_attack()
@@ -181,10 +182,11 @@ func player():
 	pass
 	
 func dash():
+	#dash ability
 	speed = speed*4
-	$Dashduration.start()
-	$DashCooldown.start()
-	global_script.dash_available = false
+	$Dashduration.start()# time for dash length
+	$DashCooldown.start() #time for dash cooldown
+	global_script.dash_available = false #cant dash until cooldown is finished 
 
 func _on_player_hitbox_body_entered(body):
 	if body.has_method("enemy"):
@@ -264,6 +266,7 @@ func _input(event): #check for inputs
 		#$WeaponSwitchSound.play()
 		
 func initialize_player():
+	#set all the customized character elements 
 	body.texture = global_script.bodies_collection[global_script.selected_body]
 	body.modulate = global_script.selected_body_color
 	
@@ -279,12 +282,8 @@ func initialize_player():
 	name_label.text =  global_script.player_name
 
 
-
-
 func _on_dashduration_timeout() -> void:
-	speed = 120
-	
-
+	speed = 120 #set speed back to normal
 
 func _on_dash_cooldown_timeout() -> void:
-	global_script.dash_available = true
+	global_script.dash_available = true # dash becomes able again 

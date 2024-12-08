@@ -1040,7 +1040,6 @@ stream = ExtResource("8_kfqu1")
 stream = ExtResource("9_fhiyt")
 
 [node name="Dashduration" type="Timer" parent="."]
-wait_time = 2.0
 
 [node name="DashCooldown" type="Timer" parent="."]
 wait_time = 10.0

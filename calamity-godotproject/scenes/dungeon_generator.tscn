@@ -116,6 +116,7 @@ theme_override_font_sizes/font_size = 30
 text = "Ammo:"
 
 [node name="DashAbility" type="Label" parent="CanvasLayer/StatDisplay"]
+layout_mode = 0
 offset_left = 67.0
 offset_top = 425.0
 offset_right = 340.0
