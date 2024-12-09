@@ -28,10 +28,6 @@ window/size/viewport_height=2000
 
 project/assembly_name="Calamity-GodotProject"
 
-[editor]
-
-version_control/autoload_on_startup=true
-
 [global_group]
 
 spawnable_room=""

@@ -22,9 +22,11 @@ var player_health = 250
 var player_coins = 0
 var player_ammo = 50
 var player_xp = 0
-var floors = 1
+var floors: int = 1
 var time_survived = 0.0
 var kills = 0
+var projectile_power = 10
+var speed: float = 120
 
 # High scores set to default
 var best_xp = 0

@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://c0f531kq8nbna" path="res://art/full tilemap.png" id="1_pjx2r"]
 [ext_resource type="PackedScene" uid="uid://blffjs0lwjxe0" path="res://scenes/player.tscn" id="2_0i0bd"]
 [ext_resource type="PackedScene" uid="uid://bmjsqsvb6225k" path="res://scenes/enemy.tscn" id="3_balui"]
-[ext_resource type="PackedScene" uid="uid://b0y666ub8mdh5" path="res://scenes/enemyglobin.tscn" id="5_kijxy"]
+[ext_resource type="PackedScene" uid="uid://cuct8p78s0u5u" path="res://scenes/enemyglobin.tscn" id="5_kijxy"]
 [ext_resource type="PackedScene" uid="uid://cy4xx1hlip17m" path="res://scenes/projectile.tscn" id="6_t56a7"]
 [ext_resource type="PackedScene" uid="uid://cx403i58w3og5" path="res://scenes/audio.tscn" id="7_c2nx7"]
 [ext_resource type="PackedScene" uid="uid://dmcdsfapb015f" path="res://scenes/pause_menu.tscn" id="7_qtgcx"]
@@ -116,7 +116,6 @@ layer_1/y_sort_enabled = true
 layer_1/tile_data = PackedInt32Array(131086, 196609, 5, 196622, 196609, 5, 262158, 196609, 5, 327694, 196609, 5, 393230, 196609, 5, 458766, 196609, 5, 524302, 65537, 7, 131089, 196609, 5, 196625, 196609, 5, 262161, 196609, 5, 327697, 196609, 5, 393233, 196609, 5, 458769, 196609, 5, 524305, 196609, 5, 524303, 131073, 7, 524304, 131073, 7, 458767, 327681, 0, 24, 262145, 1, 786456, 262145, 1, 851967, 262145, 1, 65535, 262145, 1, 262147, 327681, 1, 262148, 327681, 1, 393220, 65537, 1, 393219, 1, 1, 131078, 65537, 0, 589828, 131073, 0, 589827, 131073, 0, 589829, 131073, 0, 589830, 131073, 0, 12, 262145, 0, 11, 262145, 0)
 
 [node name="Player" parent="." instance=ExtResource("2_0i0bd")]
-process_mode = 1
 position = Vector2(169, 101)
 
 [node name="enemy" parent="." instance=ExtResource("3_balui")]
