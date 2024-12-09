@@ -118,10 +118,15 @@ func check_for_new_high_scores(): # function that checks for new high scores
 	
 	
 func reset_player_stats(): # function to set the player stats back to default
+	player_health = 250
 	player_xp = 0
 	floors = 1
 	time_survived = 0
 	kills = 0
+	player_ammo = 50
+	dash_available = true
+	projectile_power = 10
+	speed = 120
 
 # PLAYER PERSISTENCE
 var player_instance = null # variable that tracks if there is a player instance
