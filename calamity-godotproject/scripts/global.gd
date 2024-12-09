@@ -25,6 +25,7 @@ var player_xp = 0
 var floors = 1
 var time_survived = 0.0
 var kills = 0
+var dash_available = true
 
 # High scores set to default
 var best_xp = 0

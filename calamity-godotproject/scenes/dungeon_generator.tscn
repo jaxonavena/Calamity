@@ -115,8 +115,19 @@ offset_bottom = 392.0
 theme_override_font_sizes/font_size = 30
 text = "Ammo:"
 
+[node name="DashAbility" type="Label" parent="CanvasLayer/StatDisplay"]
+layout_mode = 0
+offset_left = 67.0
+offset_top = 425.0
+offset_right = 340.0
+offset_bottom = 474.0
+theme_override_font_sizes/font_size = 30
+text = "Dash Available:"
+
 [node name="CanvasLayer2" type="CanvasLayer" parent="."]
 
 [node name="PauseMenu" parent="CanvasLayer2" instance=ExtResource("20_28ujn")]
-offset_top = 64.0
-offset_bottom = 64.0
+offset_left = -2.0
+offset_top = 112.0
+offset_right = -2.0
+offset_bottom = 112.0

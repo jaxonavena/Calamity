@@ -1040,7 +1040,14 @@ stream = ExtResource("8_kfqu1")
 [node name="SliceSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("9_fhiyt")
 
+[node name="Dashduration" type="Timer" parent="."]
+
+[node name="DashCooldown" type="Timer" parent="."]
+wait_time = 10.0
+
 [connection signal="body_entered" from="player_hitbox" to="." method="_on_player_hitbox_body_entered"]
 [connection signal="body_exited" from="player_hitbox" to="." method="_on_player_hitbox_body_exited"]
 [connection signal="timeout" from="enemy_attackcooldown" to="." method="_on_enemy_attackcooldown_timeout"]
 [connection signal="timeout" from="attack_timer" to="." method="_on_attack_timer_timeout"]
+[connection signal="timeout" from="Dashduration" to="." method="_on_dashduration_timeout"]
+[connection signal="timeout" from="DashCooldown" to="." method="_on_dash_cooldown_timeout"]

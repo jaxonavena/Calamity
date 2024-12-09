@@ -41,6 +41,7 @@ var coins_label
 var xp_label
 var health_label
 var ammo_label
+var dash_label
 
 # DebugDisplay
 var mouse_pos_label
@@ -561,6 +562,7 @@ func find_stat_labels():
 	xp_label = stat_display.get_node("XP")
 	health_label = stat_display.get_node("Health")
 	ammo_label = stat_display.get_node("Ammo")
+	dash_label = stat_display.get_node("DashAbility")
 				
 func update_stats():
 	# Update the stat labels on the UI
@@ -571,6 +573,7 @@ func update_stats():
 	xp_label.text = "XP: " + str(global_script.player_xp)
 	health_label.text = "HP: "  + ("|".repeat(global_script.player_health / 10))
 	ammo_label.text = "Ammo: " + str(global_script.player_ammo)
+	dash_label.text = "Dash Available: " + str(global_script.dash_available)
 	
 func find_debug_labels():
 	# Grab on to the debug labels on the UI
