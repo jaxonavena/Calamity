@@ -180,6 +180,16 @@ stream = ExtResource("3_wdkcq")
 [node name="DieEffect" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("4_xr8rf")
 
+[node name="HealthBar" type="ProgressBar" parent="."]
+modulate = Color(0.270588, 0.803922, 0.270588, 1)
+offset_left = -8.0
+offset_top = 6.0
+offset_right = 142.0
+offset_bottom = 33.0
+scale = Vector2(0.1, 0.1)
+max_value = 50.0
+show_percentage = false
+
 [connection signal="body_entered" from="detection_area" to="." method="_on_detection_area_body_entered"]
 [connection signal="body_exited" from="detection_area" to="." method="_on_detection_area_body_exited"]
 [connection signal="body_entered" from="enemy_hitbox" to="." method="_on_enemy_hitbox_body_entered"]
