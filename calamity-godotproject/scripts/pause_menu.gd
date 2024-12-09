@@ -22,6 +22,8 @@
 ## opens pause menu
 extends Control
 
+var shop_scene = preload("res://scenes/Shop.tscn")
+
 func _ready():
 	# Hides the pause menu when the game starts
 	hide()
@@ -46,3 +48,12 @@ func _on_resume_pressed() -> void:
 func _on_quit_pressed() -> void:
 	print("quit")
 	get_tree().quit()
+
+
+func _on_shop_pressed() -> void:
+	print("shop")
+	var shop_instance = shop_scene.instantiate()
+	add_child(shop_instance)
+	self.visible = false  # Hide the pause menu itself
+	hide()
+	show()

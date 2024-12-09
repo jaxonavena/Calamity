@@ -68,5 +68,16 @@ size_flags_horizontal = 4
 theme = SubResource("Theme_q7sjm")
 text = "Quit"
 
+[node name="shop" type="Button" parent="."]
+custom_minimum_size = Vector2(400, 150)
+layout_mode = 2
+offset_left = 800.0
+offset_top = 1093.0
+offset_right = 1200.0
+offset_bottom = 1243.0
+theme_override_font_sizes/font_size = 40
+text = "Shop"
+
 [connection signal="pressed" from="Panel/VBoxContainer/Resume" to="." method="_on_resume_pressed"]
 [connection signal="pressed" from="Panel/VBoxContainer/Quit" to="." method="_on_quit_pressed"]
+[connection signal="pressed" from="shop" to="." method="_on_shop_pressed"]

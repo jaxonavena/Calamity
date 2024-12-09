@@ -26,7 +26,7 @@ extends CharacterBody2D
 
 
 # Player stuff
-var speed = 120	
+var speed = global_script.speed
 var current_dir = "down"
 var enemy_in_attack_range = false
 var enemy_attack_cooldown = true

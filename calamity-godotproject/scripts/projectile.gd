@@ -11,7 +11,7 @@ extends CharacterBody2D # attachs the script to a Character node
 
 
 @export var speed: float = 250 # defines speed for the projectile
-@export var damage: int = 10 # defines how much damage it will do
+@export var damage: int = global_script.projectile_power # defines how much damage it will do
 @export var lifetime: float = 2.0 # defines how long the projectile will last
 @export var effect_type: String = "default" # Options: "explosive", "piercing", "fast"
 @export var pierce_count: int = 3 # Number of enemies it can pass through

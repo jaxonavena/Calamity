@@ -16,6 +16,7 @@ var staircase = preload("res://scenes/staircase.tscn")
 var player = preload("res://scenes/player.tscn")
 var enemy = preload("res://scenes/enemy.tscn")
 var enemyglobin = preload("res://scenes/enemyglobin.tscn")
+var shop = preload("res://scenes/Shop.tscn")
 
 
 var used_positions = {} # Tracks locations of rooms on the map
@@ -51,6 +52,7 @@ func _ready():
 	global_script.no_path_to_stairs = false
 	global_script.restarting = false # Currently restarting
 	global_script.restart_allowed = true # Allowed to restart
+
 	generate_dungeon() # Build the map
 	place_player(global_script.player_instance) # Put the player on the map
 	place_staircase() # Put the stairs far away from the player
@@ -61,7 +63,7 @@ func _ready():
 	find_stat_labels()
 	find_debug_labels()
 	update_stats()
-	
+
 func _process(delta):
 	# cmd+R or ctrl+R press to restart the scene
 	$CanvasLayer2/PauseMenu.visible = global_script.pause_game
