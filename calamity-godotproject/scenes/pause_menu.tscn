@@ -66,7 +66,7 @@ custom_minimum_size = Vector2(400, 150)
 layout_mode = 2
 size_flags_horizontal = 4
 theme = SubResource("Theme_q7sjm")
-text = "Press ESC to resume"
+text = "Quit"
 
 [connection signal="pressed" from="Panel/VBoxContainer/Resume" to="." method="_on_resume_pressed"]
 [connection signal="pressed" from="Panel/VBoxContainer/Quit" to="." method="_on_quit_pressed"]

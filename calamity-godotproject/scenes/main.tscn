@@ -116,7 +116,6 @@ layer_1/y_sort_enabled = true
 layer_1/tile_data = PackedInt32Array(131086, 196609, 5, 196622, 196609, 5, 262158, 196609, 5, 327694, 196609, 5, 393230, 196609, 5, 458766, 196609, 5, 524302, 65537, 7, 131089, 196609, 5, 196625, 196609, 5, 262161, 196609, 5, 327697, 196609, 5, 393233, 196609, 5, 458769, 196609, 5, 524305, 196609, 5, 524303, 131073, 7, 524304, 131073, 7, 458767, 327681, 0, 24, 262145, 1, 786456, 262145, 1, 851967, 262145, 1, 65535, 262145, 1, 262147, 327681, 1, 262148, 327681, 1, 393220, 65537, 1, 393219, 1, 1, 131078, 65537, 0, 589828, 131073, 0, 589827, 131073, 0, 589829, 131073, 0, 589830, 131073, 0, 12, 262145, 0, 11, 262145, 0)
 
 [node name="Player" parent="." instance=ExtResource("2_0i0bd")]
-process_mode = 1
 position = Vector2(169, 101)
 
 [node name="enemy" parent="." instance=ExtResource("3_balui")]
@@ -155,6 +154,7 @@ anchor_right = 1.434
 anchor_bottom = 1.279
 
 [node name="DungeonGenerator" parent="." instance=ExtResource("8_qawty")]
+process_mode = 3
 
 [node name="Audio" parent="." instance=ExtResource("7_c2nx7")]
 process_mode = 3
