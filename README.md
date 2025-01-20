@@ -28,7 +28,7 @@ Requires Godot 4.
 
 ----
 ### Face dastardly monsters!
-(Melee: `Space bar`, Ranged attaack: `Left Mouse Button`)
+(Melee: `Space bar`, Ranged attack: `Left Mouse Button`)
 
 <img width="415" alt="Screenshot 2025-01-17 at 12 31 57 PM" src="https://github.com/user-attachments/assets/4ec6c436-2b0d-4563-85cc-9d809645a402" />
 <img width="713" alt="Screenshot 2025-01-17 at 12 37 09 PM" src="https://github.com/user-attachments/assets/6941ebee-1c45-4b66-8d1a-78dcd5d00084" />
